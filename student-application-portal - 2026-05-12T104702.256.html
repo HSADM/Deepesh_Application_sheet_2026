@@ -1,0 +1,3188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Application Entry Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f4f1ec;
+    --surface: #ffffff;
+    --primary: #1a365d;
+    --primary-light: #2c5282;
+    --accent: #c4a35a;
+    --accent-glow: #d4b76a;
+    --text: #1a202c;
+    --text-muted: #64748b;
+    --border: #e2ddd5;
+    --error: #c53030;
+    --error-bg: #fff5f5;
+    --success: #276749;
+    --success-bg: #f0fff4;
+    --radius: 10px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+    --shadow-lg: 0 12px 40px rgba(0,0,0,0.12);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .header {
+    background: var(--primary);
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-glow), var(--accent));
+  }
+  .header-inner {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 28px 24px 24px;
+    position: relative;
+    z-index: 1;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .brand-logo {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    border: 2px solid rgba(255,255,255,0.2);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 4px 16px rgba(0,0,0,0.3);
+    background: #1e2a3a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .brand-name {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.3px;
+  }
+  .header p {
+    color: rgba(255,255,255,0.92);
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 6px;
+    letter-spacing: 0.2px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+
+  .main {
+    max-width: 620px;
+    margin: 0 auto;
+    padding: 24px 16px 48px;
+  }
+
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    padding: 32px 28px;
+    border: 1px solid var(--border);
+  }
+  @media (max-width: 520px) {
+    .card { padding: 24px 18px; }
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 24px;
+  }
+  .form-grid .full { grid-column: 1 / -1; }
+  @media (max-width: 560px) {
+    .form-grid { grid-template-columns: 1fr; }
+  }
+
+  .field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 6px;
+    letter-spacing: 0.2px;
+  }
+  .field label .req {
+    color: var(--error);
+    margin-left: 2px;
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: #faf9f7;
+    color: var(--text);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  .field textarea {
+    min-height: 90px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+  .field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' fill='none' stroke='%2364748b' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(26,54,93,0.1);
+    background: #fff;
+  }
+  .field input.invalid,
+  .field select.invalid,
+  .field textarea.invalid {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(197,48,48,0.08);
+  }
+  .field .field-error {
+    font-size: 12px;
+    color: var(--error);
+    margin-top: 4px;
+    display: none;
+  }
+  .field .field-error.show { display: block; }
+  .field .hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    color: var(--text-muted);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    margin-top: 8px;
+    grid-column: 1 / -1;
+  }
+
+  .btn-row {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 32px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--primary-light); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1.5px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--text-muted); color: var(--text); }
+
+  .toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .toast {
+    padding: 14px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: var(--shadow-lg);
+    animation: slideIn 0.35s cubic-bezier(0.16,1,0.3,1);
+    max-width: 380px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .toast.success { background: var(--success-bg); color: var(--success); border: 1px solid #c6f6d5; }
+  .toast.error   { background: var(--error-bg);   color: var(--error);   border: 1px solid #fed7d7; }
+  .toast .icon { font-size: 18px; flex-shrink: 0; }
+  .toast.hide { animation: slideOut 0.3s ease forwards; }
+  @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes slideOut { to { transform: translateX(120%); opacity: 0; } }
+
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2.5px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .success-screen {
+    text-align: center;
+    padding: 48px 24px;
+    display: none;
+  }
+  .success-screen.show { display: block; }
+  .success-screen .check-circle {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    background: var(--success-bg);
+    border: 2px solid #c6f6d5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 36px;
+    color: var(--success);
+  }
+  .success-screen h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: var(--primary);
+    margin-bottom: 8px;
+  }
+  .success-screen > p {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  .success-screen .form-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    margin-top: 8px;
+  }
+  .ref-number {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    font-family: 'DM Sans', monospace;
+    font-weight: 700;
+    font-size: 16px;
+    padding: 8px 18px;
+    border-radius: 6px;
+    letter-spacing: 2px;
+    margin: 8px 0 24px;
+  }
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    text-align: left;
+  }
+  .detail-row:last-of-type { border-bottom: none; }
+  .detail-label { color: var(--text-muted); }
+  .detail-value { font-weight: 600; color: var(--text); }
+  .details-box {
+    background: #faf9f7;
+    border-radius: 8px;
+    padding: 8px 20px;
+    margin-bottom: 24px;
+    border: 1px solid var(--border);
+    max-width: 460px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 16px 16px 24px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .footer a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .footer a:hover { text-decoration: underline; }
+
+  /* — Tab Bar — */
+  .tab-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    display: flex;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+    z-index: 100;
+  }
+  .tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 8px 12px;
+    border: none;
+    background: none;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .tab .tab-icon { font-size: 20px; line-height: 1; }
+  .tab.active { color: var(--primary); }
+  .tab:hover { color: var(--primary-light); }
+  body { padding-bottom: 72px; }
+
+  /* — Page switching — */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* — Dashboard — */
+  .dash-wide { max-width: 1400px; }
+
+  /* ── Dashboard Header ── */
+  .dash-header { margin-bottom: 24px; }
+  .dash-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .dash-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: var(--primary);
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+  .dash-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+  /* ── Search ── */
+  .search-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .search-wrap::before {
+    content: '⌕';
+    position: absolute;
+    left: 11px;
+    font-size: 16px;
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+  .search-input {
+    padding: 8px 14px 8px 32px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    background: #fff;
+    outline: none;
+    width: 240px;
+    transition: border-color 0.2s, box-shadow 0.2s, width 0.3s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .search-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(26,54,93,0.08);
+    width: 280px;
+  }
+  .btn-sm { padding: 8px 18px; font-size: 13px; border-radius: 20px; }
+
+  /* ── Stat Cards ── */
+  .dash-stats {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 10px;
+    margin-top: 18px;
+  }
+  @media (max-width: 1200px) {
+    .dash-stats { grid-template-columns: repeat(6, 1fr); }
+  }
+  @media (max-width: 700px) {
+    .dash-stats { grid-template-columns: repeat(3, 1fr); }
+  }
+  .stat-card {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 8px 10px;
+    text-align: center;
+    position: relative;
+    overflow: visible;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    min-width: 80px;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 12px 12px 0 0;
+  }
+  .stat-total::before  { background: linear-gradient(90deg,#1a365d,#2c5282); }
+  .stat-done::before   { background: linear-gradient(90deg,#276749,#38a169); }
+  .stat-half::before   { background: linear-gradient(90deg,#b7791f,#d97706); }
+  .stat-test::before   { background: linear-gradient(90deg,#b7791f,#f59e0b); }
+  .stat-pi::before     { background: linear-gradient(90deg,#6b46c1,#805ad5); }
+  .stat-hold::before   { background: linear-gradient(90deg,#4a5568,#718096); }
+  .stat-cancelled::before   { background: linear-gradient(90deg,#c53030,#e53e3e); }
+  .stat-admitted::before    { background: linear-gradient(90deg,#065f46,#059669); }
+  .stat-adm-cancelled::before { background: linear-gradient(90deg,#7b341e,#c05621); }
+  .stat-ol-released::before  { background: linear-gradient(90deg,#065f46,#10b981); }
+  .stat-ol-hold::before      { background: linear-gradient(90deg,#1e40af,#3b82f6); }
+  .stat-ol-pending::before   { background: linear-gradient(90deg,#6d28d9,#8b5cf6); }
+  .stat-total .stat-num   { color: #1a365d; }
+  .stat-done .stat-num    { color: #276749; }
+  .stat-half .stat-num    { color: #b7791f; }
+  .stat-test .stat-num    { color: #b7791f; }
+  .stat-pi .stat-num      { color: #6b46c1; }
+  .stat-hold .stat-num    { color: #4a5568; }
+  .stat-cancelled .stat-num   { color: #c53030; }
+  .stat-admitted .stat-num    { color: #065f46; }
+  .stat-adm-cancelled .stat-num { color: #7b341e; }
+  .stat-ol-released .stat-num  { color: #065f46; }
+  .stat-ol-hold .stat-num      { color: #1e40af; }
+  .stat-ol-pending .stat-num   { color: #6d28d9; }
+  .stat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+  .stat-num {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1;
+    transition: all 0.4s;
+  }
+  .stat-label {
+    font-size: 9px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 5px;
+    font-weight: 600;
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.3;
+  }
+
+  /* ── Filter Bar ── */
+  .filter-bar {
+    display: flex;
+    gap: 6px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+    background: #fff;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .filter-select {
+    padding: 6px 28px 6px 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: #f8f9fa;
+    color: var(--text);
+    outline: none;
+    cursor: pointer;
+    min-width: 130px;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' fill='none' stroke='%2364748b' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  }
+  .filter-select:focus {
+    border-color: var(--primary);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(26,54,93,0.08);
+  }
+  .filter-select.active {
+    border-color: var(--primary);
+    background: #eef2f8;
+    color: var(--primary);
+    font-weight: 600;
+  }
+  .date-range-wrap {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: #f8f9fa;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 4px 10px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .date-range-wrap:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(26,54,93,0.08);
+    background: #fff;
+  }
+  .date-range-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .date-input {
+    border: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text);
+    outline: none;
+    cursor: pointer;
+    width: 120px;
+    padding: 2px 0;
+  }
+  .date-input::-webkit-calendar-picker-indicator {
+    opacity: 0.5;
+    cursor: pointer;
+    width: 14px;
+    height: 14px;
+  }
+  .date-range-sep {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .btn-clear-filters {
+    padding: 6px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.3px;
+  }
+  .btn-clear-filters:hover {
+    border-color: var(--error);
+    color: var(--error);
+    background: #fff5f5;
+  }
+
+  /* ── Table ── */
+  .table-wrap {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-top: 14px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  }
+  .data-table {
+    width: auto;
+    min-width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    white-space: nowrap;
+    table-layout: auto;
+  }
+  .data-table thead { position: sticky; top: 0; z-index: 2; }
+  .data-table th {
+    background: var(--primary);
+    color: rgba(255,255,255,0.85);
+    font-weight: 600;
+    padding: 11px 14px;
+    text-align: left;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    white-space: nowrap;
+    user-select: none;
+  }
+  .data-table th:first-child { border-radius: 0; }
+  .data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #f0ede8;
+    color: var(--text);
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12.5px;
+    transition: background 0.15s;
+  }
+  .data-table tbody tr {
+    transition: background 0.15s, transform 0.1s;
+    animation: rowFadeIn 0.25s ease both;
+  }
+  @keyframes rowFadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .data-table tbody tr:hover { background: #f0f4fb; }
+  .data-table tbody tr:last-child td { border-bottom: none; }
+  .data-table tbody tr:nth-child(even) { background: #fdfcfb; }
+  .data-table tbody tr:nth-child(even):hover { background: #f0f4fb; }
+
+  .dash-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+  .dash-empty::before { content: '🔍'; display: block; font-size: 32px; margin-bottom: 10px; }
+  .dash-loading {
+    text-align: center;
+    padding: 40px 20px 20px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+  .spinner.dark {
+    border-color: rgba(26,54,93,0.15);
+    border-top-color: var(--primary);
+  }
+
+  /* ── Skeleton loader ── */
+  @keyframes shimmer {
+    0%   { background-position: -700px 0; }
+    100% { background-position: 700px 0; }
+  }
+  .skel {
+    display: inline-block;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #e8e8e8 25%, #f5f5f5 50%, #e8e8e8 75%);
+    background-size: 700px 100%;
+    animation: shimmer 1.4s infinite linear;
+  }
+  .skel-row td { padding: 11px 14px !important; }
+  .skel-stat {
+    height: 28px; border-radius: 6px; margin: 4px auto 6px; display: block;
+  }
+  .load-progress-bar {
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 3px;
+    margin-bottom: 16px;
+    animation: progressPulse 1.6s ease-in-out infinite;
+    transform-origin: left;
+  }
+  @keyframes progressPulse {
+    0%   { opacity: 0.5; width: 20%; }
+    50%  { opacity: 1;   width: 75%; }
+    100% { opacity: 0.5; width: 20%; }
+  }
+
+  /* Result count badge */
+  .result-count {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+    padding: 3px 10px;
+    background: #f0f4fb;
+    border-radius: 20px;
+    margin-left: 6px;
+  }
+
+  /* — Password Modal — */
+  .pwd-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+  }
+  .pwd-overlay.show { display: flex; }
+  .pwd-modal {
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 36px 32px;
+    width: 90%;
+    max-width: 380px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    animation: modalIn 0.3s cubic-bezier(0.16,1,0.3,1);
+  }
+  @keyframes modalIn { from { transform: scale(0.9) translateY(20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+  .pwd-icon { font-size: 40px; margin-bottom: 12px; }
+  .pwd-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--primary);
+    margin-bottom: 6px;
+  }
+  .pwd-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+  .pwd-input {
+    width: 100%;
+    padding: 12px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: #faf9f7;
+    outline: none;
+    text-align: center;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .pwd-input:focus { border-color: var(--primary-light); background: #fff; }
+  .pwd-error {
+    font-size: 12px;
+    color: var(--error);
+    margin-bottom: 16px;
+    min-height: 18px;
+  }
+  .pwd-btn-row { display: flex; gap: 10px; justify-content: center; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+
+  /* ── Edit Button ── */
+  .edit-btn {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+    box-shadow: 0 2px 6px rgba(26,54,93,0.25);
+    letter-spacing: 0.2px;
+  }
+  .edit-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(26,54,93,0.35);
+  }
+  .edit-btn:active { transform: translateY(0); box-shadow: none; }
+
+  /* ── Edit Modal Overlay ── */
+  #editModal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15,25,50,0.6);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 9999;
+    overflow-y: auto;
+    padding: 24px 16px 40px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  #editModal.open {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    opacity: 1;
+  }
+  #editModalBox {
+    background: #fff;
+    border-radius: 18px;
+    width: 100%;
+    max-width: 900px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+    overflow: hidden;
+    animation: modalSlideIn 0.28s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  @keyframes modalSlideIn {
+    from { transform: translateY(30px) scale(0.97); opacity: 0; }
+    to   { transform: translateY(0) scale(1); opacity: 1; }
+  }
+  #editModalHeader {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: #fff;
+    padding: 20px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  #editModalHeader h2 {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.2px;
+  }
+  #editModalHeader p {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-top: 2px;
+  }
+  #editModalClose {
+    background: rgba(255,255,255,0.15);
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    line-height: 1;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  #editModalClose:hover { background: rgba(255,255,255,0.3); }
+  #editModalBody {
+    padding: 24px 28px;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  #editModalBody::-webkit-scrollbar { width: 5px; }
+  #editModalBody::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+  .edit-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    margin: 18px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .edit-section-title:first-child { margin-top: 0; }
+  #editForm .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  #editForm .field { display: flex; flex-direction: column; gap: 4px; }
+  #editForm .field.full { grid-column: 1 / -1; }
+  #editForm .field.half { grid-column: span 1; }
+  #editForm label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  #editForm input, #editForm select, #editForm textarea {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 11px;
+    font-size: 13px;
+    font-family: inherit;
+    color: var(--text);
+    background: #f9f9f9;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    width: 100%;
+  }
+  #editForm input:focus, #editForm select:focus, #editForm textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(26,54,93,0.08);
+  }
+  #editForm select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' fill='none' stroke='%2364748b' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-color: #f9f9f9;
+    padding-right: 28px;
+  }
+  #editFormFooter {
+    padding: 14px 28px;
+    background: #f8f9fa;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  #editSaveBtn {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 28px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 14px rgba(26,54,93,0.3);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  #editSaveBtn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,54,93,0.4); }
+  #editSaveBtn:active { transform: none; }
+  #editSaveBtn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .edit-cancel-btn {
+    background: #fff;
+    color: var(--text-muted);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .edit-cancel-btn:hover { background: #f0f0f0; color: var(--text); border-color: #ccc; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-logo">H</div>
+      <div class="brand-text">
+        <span class="brand-name">HIGHER.STUDY</span>
+      </div>
+    </div>
+    <h1>Application Entry Portal</h1>
+    <p>Record a new candidate application — all mandatory fields must be filled</p>
+  </div>
+</header>
+
+<main class="main" id="mainEl">
+
+  <!-- ══════════════════ APPLY PAGE ══════════════════ -->
+  <div class="page active" id="pageApply">
+  <div class="card" id="formCard">
+    <form id="applicationForm" novalidate autocomplete="off">
+      <div class="form-grid">
+
+        <!-- ═══ Section 1: Counsellor & Team ═══ -->
+        <div class="section-title">Counsellor &amp; Team</div>
+
+        <div class="field">
+          <label>Counsellor Name <span class="req">*</span></label>
+          <select name="Counsellor Name" required>
+            <option value="">Select counsellor</option>
+            <option>Ranjita Behura</option>
+            <option>Sugyani Naik</option>
+            <option>Abhishek Das</option>
+            <option>Sonalika Pal</option>
+            <option>Dharmananda Sahu</option>
+            <option>Lipsa Priyadarshini Swain</option>
+            <option>Shreya</option>
+            <option>Rohini Ladage</option>
+            <option>Bhumika Bansode</option>
+            <option>Zayed Quadri</option>
+            <option>Deepak Gupta</option>
+            <option>Samiksha Aswar</option>
+            <option>Trupti Mankar</option>
+            <option>Shinjinee Goswami</option>
+            <option>Lokesh Gugale</option>
+            <option>Shreyash Bankar</option>
+            <option>Vaibhavi Raval</option>
+            <option>Samarth Kokate</option>
+            <option>Rutuja Chunarkar</option>
+            <option>Reshma vhatkar</option>
+            <option>Meenakshi Manwadi</option>
+            <option>Priya jaiswal</option>
+            <option>Nikita patidar</option>
+            <option>Sameer Abbas</option>
+            <option>Prasad thorat</option>
+            <option>Aditi Bhosale</option>
+            <option>Pratiksha Jagtap</option>
+            <option>Faisal Shaikh</option>
+            <option>Dhanashri Adhav</option>
+            <option>Abhay dimble</option>
+            <option>Moin pathan</option>
+            <option>Khushi Oswal</option>
+            <option>Tejaswini bhalke</option>
+            <option>Aditya hiwale</option>
+            <option>Aditi dhariwal</option>
+            <option>Deven Suryavanshi</option>
+            <option>Nirupama Singh</option>
+            <option>Yuvraj Pandhare</option>
+            <option>Srinidhi Galande</option>
+            <option>Ashwini Kadve</option>
+            <option>Farheen Afshan</option>
+            <option>Dipika Mahajan</option>
+            <option>Bilal Ayaz Shaikh</option>
+            <option>Nutan Malwade</option>
+            <option>Kishore Metkari</option>
+            <option>Manoj Sahu</option>
+            <option>Priyanka Kasare</option>
+            <option>Pranita Chaudhary</option>
+            <option>Atharva gaikwad</option>
+            <option>Anjana Mohanty</option>
+            <option>Priyanka Khude</option>
+            <option>Atharva Jadhav</option>
+            <option>Sharayu Nimbalkar</option>
+            <option>Sneha Shilvanth</option>
+            <option>Priya Jadhav</option>
+            <option>Laxmi Biradar</option>
+            <option>Shruti Girigosavi</option>
+            <option>Nausheen Afshan</option>
+            <option>Sanskruti Kurale</option>
+            <option>Sohail Sayyed</option>
+            <option>Vaishnavi Mane</option>
+            <option>Viraj Nikam</option>
+            <option>Manisha Shinde</option>
+            <option>Pranav Gopale</option>
+            <option>Umair Pirjade</option>
+            <option>Ritusmita Choudhury</option>
+            <option>Subhashree Dash</option>
+            <option>Nihal Pal</option>
+            <option>Iqra shaikh</option>
+            <option>sayyad mafis mahemud</option>
+            <option>Pavan Waghmare</option>
+            <option>Pooja Kore</option>
+            <option>Sapna Chavhan</option>
+            <option>Sonali Sul</option>
+            <option>Simra limboowale</option>
+            <option>Tanvi Dhokne</option>
+            <option>Sohail Shaikh</option>
+            <option>Sangita Das</option>
+            <option>Meenal solanki</option>
+            <option>Sneha Shilvanth</option>
+            <option>Nikita Jannu</option>
+          </select>
+          <div class="field-error">Counsellor name is required</div>
+        </div>
+
+        <div class="field">
+          <label>Team Leader <span class="req">*</span></label>
+          <select name="Team Leader" required>
+            <option value="">Select team leader</option>
+            <option>Antaryami Barik</option>
+            <option>Yashwant Kanaki</option>
+            <option>Kajal Sonone</option>
+            <option>Ruthvik Wakode</option>
+            <option>Devashish B</option>
+            <option>Bhakti Sawargaonkar</option>
+            <option>Priyanka Bhoi</option>
+            <option>Akshay Palsande</option>
+            <option>Vaishnavi Bhoyar</option>
+            <option>Manas N</option>
+          </select>
+          <div class="field-error">Please select a team leader</div>
+        </div>
+
+        <div class="field full">
+          <label>Manager <span class="req">*</span></label>
+          <select name="Manager" required>
+            <option value="">Select manager</option>
+            <option>Deepesh Singh</option>
+            <option>Aasif Shaikh</option>
+            <option>Shipra Tripathi</option>
+            <option>Abhishek Kapoor</option>
+            <option>Manas Nayak</option>
+            <option>Aslam Khan</option>
+          </select>
+          <div class="field-error">Please select a manager</div>
+        </div>
+
+
+        <!-- ═══ Section 2: Application Details ═══ -->
+        <div class="section-title">Application Details</div>
+
+        <div class="field">
+          <label>Application Number <span class="req">*</span></label>
+          <input type="text" name="Application Number" placeholder="e.g. AU/UG/26/12149" required>
+          <div class="field-error">Application number is required</div>
+        </div>
+
+        <div class="field">
+          <label>Application Date <span class="req">*</span></label>
+          <input type="date" name="Application Date" required>
+          <div class="field-error">Application date is required</div>
+        </div>
+
+        <div class="field">
+          <label>Admission Date</label>
+          <input type="date" name="Admission Date">
+          <div class="hint">Optional — fill once admission is confirmed</div>
+        </div>
+
+        <div class="field">
+          <label>Application Type <span class="req">*</span></label>
+          <select name="Application Type" required>
+            <option value="">Select type</option>
+            <option>Paid</option>
+            <option>Free</option>
+          </select>
+          <div class="field-error">Please select application type</div>
+        </div>
+
+        <div class="field">
+          <label>Application Status <span class="req">*</span></label>
+          <select name="Application Status" required>
+            <option value="">Select status</option>
+            <option>Application Done</option>
+            <option>Half Form</option>
+            <option>Test Pending</option>
+            <option>PI Pending</option>
+            <option>Application Cancelled</option>
+            <option>Application Hold</option>
+            <option>Admission Done</option>
+            <option>Admission Cancelled</option>
+            <option>OL Released</option>
+            <option>OL on Hold</option>
+            <option>OL Pending</option>
+            <option>Rejected by Student</option>
+          </select>
+          <div class="field-error">Please select status</div>
+        </div>
+
+        <div class="field">
+          <label>User ID</label>
+          <input type="text" name="User ID" placeholder="Login ID (optional)">
+        </div>
+
+        <div class="field">
+          <label>Password</label>
+          <input type="text" name="Password" placeholder="Login password (optional)">
+          <div class="hint">Stored as-is — handle with care</div>
+        </div>
+
+        <!-- ═══ Section 3: Candidate Details ═══ -->
+        <div class="section-title">Candidate Details</div>
+
+        <div class="field full">
+          <label>Candidate Name <span class="req">*</span></label>
+          <input type="text" name="Candidate Name" placeholder="Full name as per ID" required>
+          <div class="field-error">Candidate name is required</div>
+        </div>
+
+        <div class="field">
+          <label>Registered Email ID <span class="req">*</span></label>
+          <input type="email" name="Registered Email ID" placeholder="student@example.com" required>
+          <div class="field-error">Enter a valid email address</div>
+        </div>
+
+        <div class="field">
+          <label>Registered Number <span class="req">*</span></label>
+          <input type="tel" name="Registered Number" placeholder="10-digit number" pattern="[0-9]{10}" required>
+          <div class="field-error">Enter a valid 10-digit number</div>
+        </div>
+
+        <div class="field">
+          <label>Alternate Number</label>
+          <input type="tel" name="Alternate Number" placeholder="Optional" pattern="[0-9]{10}">
+          <div class="field-error">Enter a valid 10-digit number</div>
+        </div>
+
+        <div class="field">
+          <label>Source</label>
+          <select name="Source">
+            <option value="">Select source (optional)</option>
+            <option>Alliance_G</option>
+            <option>Alliance_M</option>
+            <option>Amity G</option>
+            <option>Amity_D</option>
+            <option>Amity_Dp</option>
+            <option>Amity_M</option>
+            <option>Bangalore Ab</option>
+            <option>Bangalore R</option>
+            <option>Bangalore_PS</option>
+            <option>BGU_G</option>
+            <option>Cutm G</option>
+            <option>CvRaman_G</option>
+            <option>Delhi A</option>
+            <option>Delhi_M</option>
+            <option>Design</option>
+            <option>Driems_G</option>
+            <option>DU25</option>
+            <option>DU26</option>
+            <option>Gift G</option>
+            <option>Jaipur_A</option>
+            <option>Jaipur_Ax</option>
+            <option>Lead_IM</option>
+            <option>Lead_Ntn</option>
+            <option>Lead_V</option>
+            <option>Leads_A</option>
+            <option>Leads_DU</option>
+            <option>Lead_P26</option>
+            <option>MBA_L</option>
+            <option>Mumbai N</option>
+            <option>Odisha K</option>
+            <option>Odisha SG</option>
+            <option>Odisha_B</option>
+            <option>Odisha_FB</option>
+            <option>Odisha_I</option>
+            <option>Odisha_J</option>
+            <option>Odisha_JG</option>
+            <option>Odisha_S</option>
+            <option>Old Leads</option>
+            <option>Reference</option>
+            <option>SOA_G</option>
+            <option>V_Design</option>
+            <option>Others</option>
+            <option>Presidency_G</option>
+            <option>Lead_MT</option>
+            <option>RICS</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Referral Code</label>
+          <input type="text" name="Referral Code" placeholder="If applicable">
+          <div class="hint">Leave blank if none</div>
+        </div>
+
+
+        <div class="field">
+          <label>State <span class="req">*</span></label>
+          <select name="State" required>
+            <option value="">Select state</option>
+            <optgroup label="States">
+              <option>Andhra Pradesh</option>
+              <option>Arunachal Pradesh</option>
+              <option>Assam</option>
+              <option>Bihar</option>
+              <option>Chhattisgarh</option>
+              <option>Goa</option>
+              <option>Gujarat</option>
+              <option>Haryana</option>
+              <option>Himachal Pradesh</option>
+              <option>Jharkhand</option>
+              <option>Karnataka</option>
+              <option>Kerala</option>
+              <option>Madhya Pradesh</option>
+              <option>Maharashtra</option>
+              <option>Manipur</option>
+              <option>Meghalaya</option>
+              <option>Mizoram</option>
+              <option>Nagaland</option>
+              <option>Odisha</option>
+              <option>Punjab</option>
+              <option>Rajasthan</option>
+              <option>Sikkim</option>
+              <option>Tamil Nadu</option>
+              <option>Telangana</option>
+              <option>Tripura</option>
+              <option>Uttar Pradesh</option>
+              <option>Uttarakhand</option>
+              <option>West Bengal</option>
+            </optgroup>
+            <optgroup label="Union Territories">
+              <option>Andaman and Nicobar Islands</option>
+              <option>Chandigarh</option>
+              <option>Dadra and Nagar Haveli and Daman and Diu</option>
+              <option>Delhi</option>
+              <option>Jammu and Kashmir</option>
+              <option>Ladakh</option>
+              <option>Lakshadweep</option>
+              <option>Puducherry</option>
+            </optgroup>
+          </select>
+          <div class="field-error">Please select state</div>
+        </div>
+
+        <div class="field">
+          <label>City <span class="req">*</span></label>
+          <input type="text" name="City" placeholder="Candidate's city" required>
+          <div class="field-error">City is required</div>
+        </div>
+
+        <!-- ═══ Section 4: Program Details ═══ -->
+        <div class="section-title">Program Details</div>
+
+        <div class="field">
+          <label>University Name <span class="req">*</span></label>
+          <select name="University Name" required>
+            <option value="">Select university</option>
+            <option>Alliance</option>
+            <option>Amity</option>
+            <option>Chandigarh</option>
+            <option>CV Raman</option>
+            <option>GIFT</option>
+            <option>DRIEMS</option>
+            <option>GEC</option>
+            <option>Pearl</option>
+            <option>KU/UID</option>
+            <option>UAI</option>
+            <option>Presidency</option>
+            <option>UPES</option>
+          </select>
+          <div class="field-error">Please select university</div>
+        </div>
+
+        <div class="field">
+          <label>Campus <span class="req">*</span></label>
+          <select name="Campus" required>
+            <option value="">Select campus</option>
+            <option>Bengaluru</option>
+            <option>Mumbai</option>
+            <option>Gwalior</option>
+            <option>Raipur</option>
+            <option>Jaipur</option>
+            <option>Gurugram</option>
+            <option>Lucknow</option>
+            <option>City Campus</option>
+            <option>Central Campus</option>
+            <option>Noida</option>
+            <option>Dehradun</option>
+            <option>Delhi NCR</option>
+            <option>Ahmedabad</option>
+            <option>Gandhinagar</option>
+            <option>Paralakhemundi</option>
+            <option>Balasore</option>
+            <option>Vijayanagram</option>
+            <option>Bhubaneswar</option>
+            <option>Mohali</option>
+            <option>Unnao</option>
+            <option>Delhi West</option>
+            <option>Delhi South</option>
+            <option>Hyderabad</option>
+          </select>
+          <div class="field-error">Please select campus</div>
+        </div>
+
+        <div class="field">
+          <label>Stream <span class="req">*</span></label>
+          <select name="Stream" required>
+            <option value="">Select stream</option>
+            <option>UG</option>
+            <option>PG</option>
+            <option>Ph.D</option>
+            <option>Diploma</option>
+          </select>
+          <div class="field-error">Please select stream</div>
+        </div>
+
+        <div class="field" style="display:flex;flex-direction:column;gap:10px;">
+          <div>
+            <label>Programme Selected <span class="req">*</span></label>
+            <select name="Programme Selected" required>
+              <option value="">Select programme</option>
+              <option>B.Com</option>
+              <option>B.Design</option>
+              <option>B.Sc</option>
+              <option>B.Tech</option>
+              <option>BA</option>
+              <option>Bachelors</option>
+              <option>BBA</option>
+              <option>Diploma</option>
+              <option>M.Sc</option>
+              <option>MA</option>
+              <option>Masters</option>
+              <option>MBA</option>
+              <option>Ph.D</option>
+              <option>M.Design</option>
+              <option>Others</option>
+            </select>
+            <div class="field-error">Programme is required</div>
+          </div>
+          <div>
+            <label>Course Specialization <span class="req">*</span></label>
+            <input type="text" name="Course Specialization" placeholder="e.g. Computer Science, Finance, Marketing" required>
+            <div class="field-error">Course specialization is required</div>
+          </div>
+        </div>
+
+        <!-- ═══ Section 5: Fee Details ═══ -->
+        <div class="section-title">Fee Details</div>
+
+        <div class="field">
+          <label>Course Fee <span class="req">*</span></label>
+          <input type="number" name="Course Fee" placeholder="e.g. 250000" min="0" step="1" required>
+          <div class="field-error">Course fee is required</div>
+          <div class="hint">Total course fee in ₹</div>
+        </div>
+
+        <div class="field">
+          <label>Semester Fee <span class="req">*</span></label>
+          <input type="number" name="Semester Fee" placeholder="e.g. 45000" min="0" step="1" required>
+          <div class="field-error">Semester fee is required</div>
+          <div class="hint">Per-semester fee in ₹</div>
+        </div>
+
+        <!-- ═══ Section 6: Remarks ═══ -->
+        <div class="section-title">Additional Notes</div>
+
+        <div class="field">
+          <label>RAG</label>
+          <select name="RAG">
+            <option value="">Select RAG</option>
+            <option>Red</option>
+            <option>Amber</option>
+            <option>Green</option>
+          </select>
+        </div>
+
+        <div class="field full">
+          <label>Remarks <span class="req">*</span></label>
+          <textarea name="Remarks" placeholder="Any relevant notes, follow-up points, or special instructions" required></textarea>
+          <div class="field-error">Remarks are required</div>
+        </div>
+
+        <!-- Hidden field to satisfy backend requirement -->
+        <input type="hidden" name="Course Selected" value="N/A">
+
+        <!-- Buttons -->
+        <div class="btn-row">
+          <button type="submit" class="btn btn-primary" id="submitBtn">Submit Entry</button>
+          <button type="reset" class="btn btn-secondary" id="resetBtn">Clear</button>
+        </div>
+
+      </div>
+    </form>
+
+    <div class="success-screen" id="successScreen">
+      <div class="check-circle">✓</div>
+      <h2>Application Submitted!</h2>
+      <p>Your application has been recorded. Our team will reach out shortly.</p>
+      <div class="form-label">Your Application Number</div>
+      <div class="ref-number" id="refNumber">—</div>
+      <div class="details-box" id="detailsBox"></div>
+      <button class="btn btn-primary" onclick="resetForm()">Submit Another Application</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    Need help? Contact <a href="mailto:admissions@higher.study">admissions@higher.study</a> &nbsp;|&nbsp; © 2026 Higher.Study
+  </div>
+  </div><!-- /pageApply -->
+
+  <!-- ══════════════════ DASHBOARD PAGE ══════════════════ -->
+  <div class="page" id="pageDashboard">
+    <div class="card">
+      <div class="dash-header">
+        <div class="dash-title-row">
+          <div>
+            <div class="dash-title">All Applications</div>
+          </div>
+          <div class="dash-actions">
+            <div class="search-wrap">
+            <input type="text" id="searchBox" class="search-input" placeholder="Search name, email, contact…">
+          </div>
+            <button class="btn btn-primary btn-sm" onclick="hardRefresh()">⟳ Refresh</button>
+            <button class="btn btn-secondary btn-sm" onclick="exportCSV()">⬇ CSV</button>
+          </div>
+        </div>
+
+        <div class="dash-stats" id="dashStats">
+          <div class="stat-card stat-total"><div class="stat-num" id="statTotal">0</div><div class="stat-label">Total</div></div>
+          <div class="stat-card stat-done"><div class="stat-num" id="statAppDone">0</div><div class="stat-label">Application Done</div></div>
+          <div class="stat-card stat-half"><div class="stat-num" id="statHalfForm">0</div><div class="stat-label">Half Form</div></div>
+          <div class="stat-card stat-test"><div class="stat-num" id="statTestPending">0</div><div class="stat-label">Test Pending</div></div>
+          <div class="stat-card stat-pi"><div class="stat-num" id="statPIPending">0</div><div class="stat-label">PI Pending</div></div>
+          <div class="stat-card stat-hold"><div class="stat-num" id="statAppHold">0</div><div class="stat-label">App Hold</div></div>
+          <div class="stat-card stat-cancelled"><div class="stat-num" id="statAppCancelled">0</div><div class="stat-label">App Cancelled</div></div>
+          <div class="stat-card stat-admitted"><div class="stat-num" id="statAdmDone">0</div><div class="stat-label">Admission Done</div></div>
+          <div class="stat-card stat-adm-cancelled"><div class="stat-num" id="statAdmCancelled">0</div><div class="stat-label">Adm Cancelled</div></div>
+          <div class="stat-card stat-ol-released"><div class="stat-num" id="statOLReleased">0</div><div class="stat-label">OL Released</div></div>
+          <div class="stat-card stat-ol-hold"><div class="stat-num" id="statOLHold">0</div><div class="stat-label">OL on Hold</div></div>
+          <div class="stat-card stat-ol-pending"><div class="stat-num" id="statOLPending">0</div><div class="stat-label">OL Pending</div></div>
+        </div>
+
+        <div class="filter-bar">
+          <select class="filter-select" id="filterUniversity"><option value="">All Universities</option></select>
+          <select class="filter-select" id="filterCampus"><option value="">All Campuses</option></select>
+          <select class="filter-select" id="filterStatus"><option value="">All Statuses</option></select>
+          <select class="filter-select" id="filterStream"><option value="">All Streams</option></select>
+          <select class="filter-select" id="filterManager"><option value="">All Managers</option></select>
+          <select class="filter-select" id="filterTeamLeader"><option value="">All Team Leaders</option></select>
+          <select class="filter-select" id="filterCounsellor"><option value="">All Counsellors</option></select>
+          <div class="date-range-wrap">
+            <span class="date-range-label">📅 Date</span>
+            <input type="date" class="date-input" id="filterDateFrom" title="From date">
+            <span class="date-range-sep">→</span>
+            <input type="date" class="date-input" id="filterDateTo" title="To date">
+          </div>
+          <button class="btn-clear-filters" onclick="clearFilters()">✕ Clear Filters</button>
+          <span class="result-count" id="resultCount">— entries</span>
+        </div>
+      </div>
+
+      <div id="dashContent">
+        <div class="dash-loading">
+          <div class="spinner dark"></div>
+          <div style="margin-top:12px;">Loading applications…</div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /pageDashboard -->
+
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- EDIT MODAL                                                 -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="editModal">
+  <div id="editModalBox">
+    <div id="editModalHeader">
+<div><h2>✏ Edit Application</h2><p id="editModalSubtitle">Loading…</p></div>
+      <button id="editModalClose" onclick="closeEditModal()">×</button>
+    </div>
+    <div id="editModalBody">
+      <form id="editForm">
+        <div class="edit-section-title">👤 Candidate Info</div>
+        <div class="form-grid">
+          <div class="field"><label>Candidate Name</label><input type="text" name="Candidate Name"></div>
+          <div class="field"><label>Registered Number</label><input type="tel" name="Registered Number"></div>
+          <div class="field"><label>Registered Email ID</label><input type="email" name="Registered Email ID"></div>
+          <div class="field"><label>Alternate Number</label><input type="tel" name="Alternate Number"></div>
+          <div class="field"><label>Application Number</label><input type="text" name="Application Number"></div>
+          <div class="field"><label>Application Date</label><input type="date" name="Application Date"></div>
+          <div class="field"><label>Admission Date</label><input type="date" name="Admission Date"></div>
+        </div>
+        <div class="edit-section-title">📋 Application Details</div>
+        <div class="form-grid">
+          <div class="field"><label>Application Type</label>
+            <select name="Application Type">
+              <option value="">Select</option>
+              <option>Paid</option>
+              <option>Free</option>
+            </select>
+          </div>
+          <div class="field"><label>Application Status</label>
+            <select name="Application Status">
+              <option value="">Select</option>
+              <option>Application Done</option>
+              <option>Half Form</option>
+              <option>Test Pending</option>
+              <option>PI Pending</option>
+              <option>Application Cancelled</option>
+              <option>Application Hold</option>
+              <option>Admission Done</option>
+              <option>Admission Cancelled</option>
+              <option>OL Released</option>
+              <option>OL on Hold</option>
+              <option>OL Pending</option>
+              <option>Rejected by Student</option>
+            </select>
+          </div>
+        </div>
+        <div class="edit-section-title">🎓 Academic Details</div>
+        <div class="form-grid">
+          <div class="field"><label>University Name</label>
+            <select name="University Name">
+              <option value="">Select</option>
+              <option>Alliance</option><option>Amity</option><option>Chandigarh</option>
+              <option>CV Raman</option><option>GIFT</option><option>DRIEMS</option>
+              <option>GEC</option><option>Pearl</option><option>KU/UID</option>
+              <option>UAI</option><option>Presidency</option><option>UPES</option>
+            </select>
+          </div>
+          <div class="field"><label>Campus</label>
+            <select name="Campus">
+              <option value="">Select</option>
+              <option>Bengaluru</option><option>Mumbai</option><option>Gwalior</option>
+              <option>Raipur</option><option>Jaipur</option><option>Gurugram</option>
+              <option>Lucknow</option><option>City Campus</option><option>Central Campus</option>
+              <option>Noida</option><option>Dehradun</option><option>Delhi NCR</option>
+              <option>Ahmedabad</option><option>Gandhinagar</option><option>Paralakhemundi</option>
+              <option>Balasore</option><option>Vijayanagram</option><option>Bhubaneswar</option>
+              <option>Mohali</option><option>Unnao</option><option>Delhi West</option>
+              <option>Delhi South</option><option>Hyderabad</option>
+            </select>
+          </div>
+          <div class="field"><label>Stream</label>
+            <select name="Stream">
+              <option value="">Select</option>
+              <option>UG</option><option>PG</option><option>Ph.D</option><option>Diploma</option>
+            </select>
+          </div>
+          <div class="field"><label>Programme Selected</label>
+            <select name="Programme Selected">
+              <option value="">Select</option>
+              <option>B.Com</option><option>B.Design</option><option>B.Sc</option>
+              <option>B.Tech</option><option>BA</option><option>Bachelors</option>
+              <option>BBA</option><option>Diploma</option><option>M.Sc</option>
+              <option>MA</option><option>Masters</option><option>MBA</option>
+              <option>Ph.D</option><option>M.Design</option><option>Others</option>
+            </select>
+          </div>
+          <div class="field"><label>Course Specialization</label><input type="text" name="Course Specialization"></div>
+          <div class="field"><label>Course Fee</label><input type="number" name="Course Fee"></div>
+          <div class="field"><label>Semester Fee</label><input type="number" name="Semester Fee"></div>
+          <div class="field"><label>RAG</label>
+            <select name="RAG">
+              <option value="">Select RAG</option>
+              <option>Red</option>
+              <option>Amber</option>
+              <option>Green</option>
+            </select>
+          </div>
+        </div>
+        <div class="edit-section-title">👥 Team & Source</div>
+        <div class="form-grid">
+          <div class="field"><label>Counsellor Name</label>
+            <select name="Counsellor Name">
+              <option value="">Select counsellor</option>
+              <option>Ranjita Behura</option>
+              <option>Sugyani Naik</option>
+              <option>Abhishek Das</option>
+              <option>Sonalika Pal</option>
+              <option>Dharmananda Sahu</option>
+              <option>Lipsa Priyadarshini Swain</option>
+              <option>Shreya</option>
+              <option>Rohini Ladage</option>
+              <option>Bhumika Bansode</option>
+              <option>Zayed Quadri</option>
+              <option>Deepak Gupta</option>
+              <option>Samiksha Aswar</option>
+              <option>Trupti Mankar</option>
+              <option>Shinjinee Goswami</option>
+              <option>Lokesh Gugale</option>
+              <option>Shreyash Bankar</option>
+              <option>Vaibhavi Raval</option>
+              <option>Samarth Kokate</option>
+              <option>Rutuja Chunarkar</option>
+              <option>Reshma vhatkar</option>
+              <option>Meenakshi Manwadi</option>
+              <option>Priya jaiswal</option>
+              <option>Nikita patidar</option>
+              <option>Sameer Abbas</option>
+              <option>Prasad thorat</option>
+              <option>Aditi Bhosale</option>
+              <option>Pratiksha Jagtap</option>
+              <option>Faisal Shaikh</option>
+              <option>Dhanashri Adhav</option>
+              <option>Abhay dimble</option>
+              <option>Moin pathan</option>
+              <option>Khushi Oswal</option>
+              <option>Tejaswini bhalke</option>
+              <option>Aditya hiwale</option>
+              <option>Aditi dhariwal</option>
+              <option>Deven Suryavanshi</option>
+              <option>Nirupama Singh</option>
+              <option>Yuvraj Pandhare</option>
+              <option>Srinidhi Galande</option>
+              <option>Ashwini Kadve</option>
+              <option>Farheen Afshan</option>
+              <option>Dipika Mahajan</option>
+              <option>Bilal Ayaz Shaikh</option>
+              <option>Nutan Malwade</option>
+              <option>Kishore Metkari</option>
+              <option>Manoj Sahu</option>
+              <option>Priyanka Kasare</option>
+              <option>Pranita Chaudhary</option>
+              <option>Atharva gaikwad</option>
+              <option>Anjana Mohanty</option>
+              <option>Priyanka Khude</option>
+              <option>Atharva Jadhav</option>
+              <option>Sharayu Nimbalkar</option>
+              <option>Sneha Shilvanth</option>
+              <option>Priya Jadhav</option>
+              <option>Laxmi Biradar</option>
+              <option>Shruti Girigosavi</option>
+              <option>Nausheen Afshan</option>
+              <option>Sanskruti Kurale</option>
+              <option>Sohail Sayyed</option>
+              <option>Vaishnavi Mane</option>
+              <option>Viraj Nikam</option>
+              <option>Manisha Shinde</option>
+              <option>Pranav Gopale</option>
+              <option>Umair Pirjade</option>
+              <option>Ritusmita Choudhury</option>
+              <option>Subhashree Dash</option>
+              <option>Nihal Pal</option>
+              <option>Iqra shaikh</option>
+              <option>sayyad mafis mahemud</option>
+              <option>Pavan Waghmare</option>
+              <option>Pooja Kore</option>
+              <option>Sapna Chavhan</option>
+              <option>Sonali Sul</option>
+              <option>Simra limboowale</option>
+              <option>Tanvi Dhokne</option>
+              <option>Sohail Shaikh</option>
+              <option>Sangita Das</option>
+              <option>Meenal solanki</option>
+              <option>Sneha Shilvanth</option>
+              <option>Nikita Jannu</option>
+            </select>
+          </div>
+          <div class="field"><label>Team Leader</label><input type="text" name="Team Leader"></div>
+          <div class="field"><label>Manager</label>
+            <select name="Manager">
+              <option value="">Select</option>
+              <option>Deepesh Singh</option><option>Aasif Shaikh</option>
+              <option>Shipra Tripathi</option><option>Abhishek Kapoor</option>
+              <option>Manas Nayak</option><option>Aslam Khan</option>
+            </select>
+          </div>
+          <div class="field"><label>Source</label>
+            <select name="Source">
+              <option value="">Select</option>
+              <option>Alliance_G</option><option>Alliance_M</option><option>Amity G</option>
+              <option>Amity_D</option><option>Amity_Dp</option><option>Amity_M</option>
+              <option>Bangalore Ab</option><option>Bangalore R</option><option>Bangalore_PS</option>
+              <option>BGU_G</option><option>Cutm G</option><option>CvRaman_G</option>
+              <option>Delhi A</option><option>Delhi_M</option><option>Design</option>
+              <option>Driems_G</option><option>DU25</option><option>DU26</option>
+              <option>Gift G</option><option>Jaipur_A</option><option>Jaipur_Ax</option>
+              <option>Lead_IM</option><option>Lead_Ntn</option><option>Lead_V</option>
+              <option>Leads_A</option><option>Leads_DU</option><option>Lead_P26</option>
+              <option>MBA_L</option><option>Mumbai N</option><option>Odisha K</option>
+              <option>Odisha SG</option><option>Odisha_B</option><option>Odisha_FB</option>
+              <option>Odisha_I</option><option>Odisha_J</option><option>Odisha_JG</option>
+              <option>Odisha_S</option><option>Old Leads</option><option>Reference</option>
+              <option>SOA_G</option><option>V_Design</option><option>Others</option>
+              <option>Presidency_G</option><option>Lead_MT</option><option>RICS</option>
+            </select>
+          </div>
+        </div>
+        <div class="edit-section-title">📍 Location & Login</div>
+        <div class="form-grid">
+          <div class="field"><label>State</label><input type="text" name="State"></div>
+          <div class="field"><label>City</label><input type="text" name="City"></div>
+          <div class="field"><label>User ID</label><input type="text" name="User ID"></div>
+          <div class="field"><label>Password</label><input type="text" name="Password"></div>
+          <div class="field"><label>Referral Code</label><input type="text" name="Referral Code"></div>
+          <div class="field full"><label>Remarks</label><textarea name="Remarks" rows="3" style="resize:vertical;"></textarea></div>
+        </div>
+        </div>
+        <input type="hidden" name="_rowIndex" id="editRowIndex">
+      </form>
+    </div>
+    <div id="editFormFooter">
+      <button class="edit-cancel-btn" onclick="closeEditModal()">Cancel</button>
+      <button id="editSaveBtn" onclick="saveEditForm()">💾 Save Changes</button>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- ══════════════════ TAB BAR ══════════════════ -->
+<nav class="tab-bar">
+  <button class="tab active" data-page="pageApply" onclick="switchPage('pageApply')">
+    <span class="tab-icon">📝</span>
+    <span>Apply</span>
+  </button>
+  <button class="tab" data-page="pageDashboard" onclick="requestDashboard()">
+    <span class="tab-icon">📊</span>
+    <span>Dashboard</span>
+  </button>
+</nav>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+"use strict";
+// ════════════════════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════════════════════
+const API_URL = "https://script.google.com/macros/s/AKfycbyMtMK8pk0kiY29zi1djrHujfT1HC69CYNOO36RQqyzR1LkDgrQClEA4wR41T8eRo2FoQ/exec";
+
+// ════════════════════════════════════════════════════════════
+// WEB WORKER — offload JSON parsing + entry processing to
+// a background thread so the main UI thread never freezes
+// ════════════════════════════════════════════════════════════
+const _workerCode = `
+self.onmessage = function(e) {
+  const { type, payload } = e.data;
+  if (type === "PROCESS") {
+    const entries = payload;
+    const map = {};
+    for (let i = 0; i < entries.length; i++) {
+      const ent = entries[i];
+      ent._idx = i;
+      // build search string
+      let s = "";
+      const keys = Object.keys(ent);
+      for (let k = 0; k < keys.length; k++) {
+        const key = keys[k];
+        if (key === "Password" || key.startsWith("_")) continue;
+        const v = ent[key];
+        if (v) s += "·" + String(v);
+      }
+      ent._searchStr = s.toLowerCase();
+      map[String(ent["Application Number"] || i)] = i;
+    }
+    self.postMessage({ type: "PROCESSED", entries, map });
+  }
+};
+`;
+let _worker = null;
+let _workerCallbacks = [];
+function _getWorker() {
+  if (_worker) return _worker;
+  try {
+    const blob = new Blob([_workerCode], { type: "application/javascript" });
+    _worker = new Worker(URL.createObjectURL(blob));
+    _worker.onmessage = (e) => {
+      if (e.data.type === "PROCESSED") {
+        const cb = _workerCallbacks.shift();
+        if (cb) cb(e.data.entries, e.data.map);
+      }
+    };
+    _worker.onerror = () => { _worker = null; }; // fallback if worker fails
+  } catch(err) { _worker = null; }
+  return _worker;
+}
+
+// Process entries via worker if available, else fallback sync
+function _processEntriesAsync(entries, startIdx) {
+  return new Promise((resolve) => {
+    const w = _getWorker();
+    if (w && startIdx === 0) {
+      _workerCallbacks.push((processed, map) => {
+        for (let i = 0; i < processed.length; i++) {
+          const e = processed[i];
+          allEntries[i]._searchStr = e._searchStr;
+          allEntries[i]._idx = e._idx;
+        }
+        // still do display fields on main thread (they need DOM functions)
+        _processDisplayFields(startIdx || 0);
+        resolve();
+      });
+      w.postMessage({ type: "PROCESS", payload: entries.slice(startIdx || 0) });
+    } else {
+      _processEntries(startIdx);
+      resolve();
+    }
+  });
+}
+
+// Only compute display-format fields (fast, stays on main thread)
+function _processDisplayFields(startIdx) {
+  const from = startIdx || 0;
+  for (let i = from; i < allEntries.length; i++) {
+    const e = allEntries[i];
+    if (!e._dateFmt)       e._dateFmt       = fmtDateDisplay(e["Form Submitted date"]);
+    if (!e._statusHtml)    e._statusHtml    = renderStatus(e["Application Status"]);
+    if (!e._ragHtml)       e._ragHtml       = renderRAG(e["RAG"] || "");
+    if (!e._courseFeeHtml) e._courseFeeHtml = fmtMoney(e["Course Fee"]);
+    if (!e._semFeeHtml)    e._semFeeHtml    = fmtMoney(e["Semester Fee"]);
+    _entryMap.set(String(e["Application Number"] || i), e);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// ADVANCED CACHE ENGINE
+// Strategy: IndexedDB (50MB) → stale-while-revalidate → background sync
+// ══════════════════════════════════════════════════════════════════════════
+const DB_NAME      = "hs_portal_db";
+const DB_VERSION   = 2;
+const STORE_NAME   = "cache";
+const CACHE_KEY    = "all_entries";
+const CACHE_TTL_MS = 30 * 60 * 1000; // 30 min — serve stale, revalidate in bg
+let _cacheTime   = 0;
+let _fetchingFull = false;
+let _db           = null;
+
+// ── IndexedDB helpers ──────────────────────────────────────────────────────
+function _openDB() {
+  if (_db) return Promise.resolve(_db);
+  return new Promise((res, rej) => {
+    const req = indexedDB.open(DB_NAME, DB_VERSION);
+    req.onupgradeneeded = e => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME);
+    };
+    req.onsuccess  = e => { _db = e.target.result; res(_db); };
+    req.onerror    = () => rej(req.error);
+  });
+}
+
+async function _idbSave(entries) {
+  try {
+    const db = await _openDB();
+    const tx = db.transaction(STORE_NAME, "readwrite");
+    tx.objectStore(STORE_NAME).put({ data: entries, ts: Date.now() }, CACHE_KEY);
+  } catch(e) {
+    // IDB failed — fallback to localStorage (compressed)
+    try {
+      localStorage.setItem("hs_cache_ts", String(Date.now()));
+      localStorage.setItem("hs_cache", JSON.stringify(entries));
+    } catch(_) {}
+  }
+}
+
+async function _idbLoad() {
+  try {
+    const db  = await _openDB();
+    return new Promise((res) => {
+      const tx  = db.transaction(STORE_NAME, "readonly");
+      const req = tx.objectStore(STORE_NAME).get(CACHE_KEY);
+      req.onsuccess = () => {
+        const rec = req.result;
+        if (!rec) return res(null);
+        if (Date.now() - rec.ts > CACHE_TTL_MS) return res({ stale: true, data: rec.data });
+        res({ stale: false, data: rec.data });
+      };
+      req.onerror = () => res(null);
+    });
+  } catch(e) {
+    // IDB failed — try localStorage fallback
+    try {
+      const ts  = parseInt(localStorage.getItem("hs_cache_ts") || "0");
+      const raw = localStorage.getItem("hs_cache");
+      if (!raw) return null;
+      const data = JSON.parse(raw);
+      return { stale: Date.now() - ts > CACHE_TTL_MS, data };
+    } catch(_) { return null; }
+  }
+}
+
+async function _idbClear() {
+  try {
+    const db = await _openDB();
+    const tx = db.transaction(STORE_NAME, "readwrite");
+    tx.objectStore(STORE_NAME).delete(CACHE_KEY);
+  } catch(e) {}
+  try { localStorage.removeItem("hs_cache"); localStorage.removeItem("hs_cache_ts"); } catch(_) {}
+}
+
+function _isCacheValid() {
+  return allEntries.length > 0 && (Date.now() - _cacheTime) < CACHE_TTL_MS;
+}
+
+// ── Process entries: build search strings + computed display fields ────────
+function _processEntries(startIdx) {
+  const from = startIdx != null ? startIdx : 0;
+  for (let i = from; i < allEntries.length; i++) {
+    const e = allEntries[i];
+    e._idx = i;
+    // fast search string
+    let s = "";
+    const keys = Object.keys(e);
+    for (let k = 0; k < keys.length; k++) {
+      const key = keys[k];
+      if (key === "Password" || key.startsWith("_")) continue;
+      if (e[key]) s += "·" + String(e[key]);
+    }
+    e._searchStr     = s.toLowerCase();
+    e._dateFmt       = fmtDateDisplay(e["Form Submitted date"]);
+    e._statusHtml    = renderStatus(e["Application Status"]);
+    e._ragHtml       = renderRAG(e["RAG"] || "");
+    e._courseFeeHtml = fmtMoney(e["Course Fee"]);
+    e._semFeeHtml    = fmtMoney(e["Semester Fee"]);
+    _entryMap.set(String(e["Application Number"] || i), e);
+  }
+}
+
+// ── Sync indicator UI ──────────────────────────────────────────────────────
+function _setSyncStatus(state) {
+  // state: 'syncing' | 'done' | 'stale' | 'error'
+  let el = document.getElementById("_syncBadge");
+  if (!el) {
+    el = document.createElement("span");
+    el.id = "_syncBadge";
+    el.style.cssText = "font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;margin-left:8px;transition:all 0.3s;display:inline-flex;align-items:center;gap:4px;";
+    const rc = document.getElementById("resultCount");
+    if (rc) rc.parentNode && rc.parentNode.appendChild(el);
+  }
+  const styles = {
+    syncing : { bg:"#e0f2fe", color:"#0369a1", text:"⟳ Syncing…",    spin: true  },
+    done    : { bg:"#dcfce7", color:"#166534", text:"✓ Up to date",   spin: false },
+    stale   : { bg:"#fef9c3", color:"#854d0e", text:"⚠ Stale data",   spin: false },
+    error   : { bg:"#fee2e2", color:"#991b1b", text:"✕ Sync failed",  spin: false },
+  };
+  const s = styles[state] || styles.done;
+  el.style.background = s.bg;
+  el.style.color      = s.color;
+  el.innerHTML        = s.spin
+    ? `<span style="display:inline-block;width:10px;height:10px;border:2px solid ${s.color}40;border-top-color:${s.color};border-radius:50%;animation:spin .6s linear infinite;"></span> Syncing…`
+    : s.text;
+  if (state === "done") setTimeout(() => { if (el) el.style.opacity = "0"; }, 3000);
+  else el.style.opacity = "1";
+}
+
+// ── Boot: load IDB → show immediately → revalidate in background ──────────
+document.addEventListener("DOMContentLoaded", async () => {
+  // 1. Try to load from IDB instantly (no network)
+  const cached = await _idbLoad();
+  if (cached && cached.data && cached.data.length > 0) {
+    allEntries = cached.data;
+    _cacheTime = cached.stale ? 0 : Date.now();
+    _processEntries(0);
+    if (cached.stale) _setSyncStatus("stale");
+  }
+
+  // 2. Always start a background server sync
+  setTimeout(() => _bgRefresh(false), 500);
+
+  // 3. Hover pre-warm (if cache invalid)
+  const dashTab = document.querySelector('.tab[data-page="pageDashboard"]');
+  if (dashTab) dashTab.addEventListener("mouseenter", () => {
+    if (!_isCacheValid() && !_fetchingFull) _bgRefresh(false);
+  }, { passive: true });
+});
+
+// ── Background refresh: fetch → save → silently update dashboard ──────────
+async function _bgRefresh(forceRefresh) {
+  if (_fetchingFull) return;
+  _fetchingFull = true;
+  _setSyncStatus("syncing");
+  try {
+    const data = await _fetchAllPages(!!forceRefresh);
+    if (data && data.length > 0) {
+      allEntries = data;
+      _cacheTime = Date.now();
+      _processEntries(0);
+      await _idbSave(allEntries);
+      _setSyncStatus("done");
+
+      // If dashboard is visible — seamlessly update without flicker
+      const dash = document.getElementById("pageDashboard");
+      if (dash && dash.classList.contains("active")) {
+        updateStats(allEntries);
+        populateFilters(allEntries);
+        // Only re-render table if user isn't mid-scroll
+        if (!_userIsScrolling) {
+          const prevPage = _currentPage;
+          renderTable(_currentFiltered.length ? applyFiltersAndReturn() : allEntries);
+          _currentPage = Math.min(prevPage, Math.ceil(_currentFiltered.length / PAGE_SIZE) - 1);
+          _renderPage();
+        }
+        const rc = document.getElementById("resultCount");
+        if (rc) rc.textContent = allEntries.length.toLocaleString() + " entries";
+      }
+    }
+  } catch(e) {
+    _setSyncStatus("error");
+    console.warn("BG refresh error:", e);
+  }
+  _fetchingFull = false;
+}
+
+// Track scroll to avoid re-rendering while user is scrolling
+let _userIsScrolling = false;
+let _scrollTimer = null;
+document.addEventListener("scroll", () => {
+  _userIsScrolling = true;
+  clearTimeout(_scrollTimer);
+  _scrollTimer = setTimeout(() => { _userIsScrolling = false; }, 300);
+}, { passive: true });
+
+async function _fetchAllPages(forceRefresh) {
+  const PAGE_SIZE = 5000;
+  const first = await _fetchPage(0, PAGE_SIZE, forceRefresh);
+  if (!first || first.status !== "success") return null;
+  const rows = [...(first.data || [])];
+  const totalPages = first.totalPages || 1;
+  if (totalPages > 1) {
+    // Fetch all remaining pages in parallel
+    const rest = await Promise.all(
+      Array.from({length: totalPages - 1}, (_, i) => _fetchPage(i + 1, PAGE_SIZE, false))
+    );
+    for (const pg of rest) {
+      if (pg && pg.status === "success") rows.push(...(pg.data || []));
+    }
+  }
+  return rows;
+}
+
+// applyFiltersAndReturn returns filtered array without re-rendering
+function applyFiltersAndReturn() {
+  const q  = (document.getElementById("searchBox")?.value || "").trim().toLowerCase();
+  const u  = (document.getElementById("filterUniversity")?.value || "").trim();
+  const c  = (document.getElementById("filterCampus")?.value || "").trim();
+  const st = (document.getElementById("filterStatus")?.value || "").trim();
+  const sm = (document.getElementById("filterStream")?.value || "").trim();
+  const m  = (document.getElementById("filterManager")?.value || "").trim();
+  const tl = (document.getElementById("filterTeamLeader")?.value || "").trim();
+  const cn = (document.getElementById("filterCounsellor")?.value || "").trim();
+  return allEntries.filter(row => {
+    if (u  && (row["University Name"]    || "").trim() !== u)  return false;
+    if (c  && (row["Campus"]             || "").trim() !== c)  return false;
+    if (st && (row["Application Status"] || "").trim() !== st) return false;
+    if (sm && (row["Stream"]             || "").trim() !== sm) return false;
+    if (m  && (row["Manager"]            || "").trim() !== m)  return false;
+    if (tl && (row["Team Leader"]        || "").trim() !== tl) return false;
+    if (cn && (row["Counsellor Name"]    || "").trim() !== cn) return false;
+    if (q  && !(row._searchStr || "").includes(q)) return false;
+    return true;
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+const form = document.getElementById("applicationForm");
+const submitBtn = document.getElementById("submitBtn");
+const successScreen = document.getElementById("successScreen");
+const toastContainer = document.getElementById("toastContainer");
+
+function toast(msg, type = "success") {
+  const t = document.createElement("div");
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span class="icon">${type === "success" ? "✓" : "⚠"}</span><span>${msg}</span>`;
+  toastContainer.appendChild(t);
+  setTimeout(() => { t.classList.add("hide"); setTimeout(() => t.remove(), 300); }, 4000);
+}
+
+function validateField(field) {
+  const errorEl = field.parentElement.querySelector(".field-error");
+  let valid = true;
+
+  if (field.hasAttribute("required") && !field.value.trim()) {
+    valid = false;
+  } else if (field.value.trim() && field.pattern && !new RegExp(`^${field.pattern}$`).test(field.value.trim())) {
+    valid = false;
+  } else if (field.type === "email" && field.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(field.value.trim())) {
+    valid = false;
+  }
+
+  if (valid) {
+    field.classList.remove("invalid");
+    if (errorEl) errorEl.classList.remove("show");
+  } else {
+    field.classList.add("invalid");
+    if (errorEl) errorEl.classList.add("show");
+  }
+  return valid;
+}
+
+form.querySelectorAll("input, select, textarea").forEach(field => {
+  field.addEventListener("blur", () => {
+    if (field.value || field.hasAttribute("required")) validateField(field);
+  });
+  field.addEventListener("input", () => {
+    if (field.classList.contains("invalid")) validateField(field);
+  });
+});
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  let allValid = true;
+  let firstInvalid = null;
+  form.querySelectorAll("input, select, textarea").forEach(field => {
+    if (!validateField(field)) {
+      allValid = false;
+      if (!firstInvalid) firstInvalid = field;
+    }
+  });
+
+  if (!allValid) {
+    if (firstInvalid) {
+      firstInvalid.scrollIntoView({ behavior: "smooth", block: "center" });
+      firstInvalid.focus();
+    }
+    toast("Please fix the highlighted fields", "error");
+    return;
+  }
+
+  const data = {};
+  new FormData(form).forEach((value, key) => { data[key] = value.trim(); });
+  // Merge Course Specialization into Programme Selected as one combined value
+  if (data["Course Specialization"]) {
+    data["Programme Selected"] = (data["Programme Selected"] ? data["Programme Selected"] + " - " : "") + data["Course Specialization"];
+    delete data["Course Specialization"];
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="spinner"></span>Submitting...';
+
+  try {
+    if (!API_URL) {
+      // Demo mode
+      await new Promise(r => setTimeout(r, 900));
+      const _now = new Date();
+      data["Form Submitted date"] = String(_now.getDate()).padStart(2,"0") + "-" + MON_NAMES[_now.getMonth()] + "-" + _now.getFullYear();
+      console.log("Demo mode — data:", data);
+      showSuccessScreen(data);
+      toast("Submitted (demo mode)", "success");
+      return;
+    }
+
+    const res = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "submitApplication", ...data }),
+    });
+    const json = await res.json();
+    if (json.status !== "success") throw new Error(json.message || "Submission failed");
+
+    data["Form Submitted date"] = json.submittedDate;
+    showSuccessScreen(data);
+    toast("Entry submitted successfully!", "success");
+  } catch (err) {
+    console.error(err);
+    toast(err.message || "Network error — please try again", "error");
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = "Submit Entry";
+  }
+});
+
+function showSuccessScreen(data) {
+  document.getElementById("refNumber").textContent = data["Application Number"] || "—";
+
+  const rows = [
+    ["Candidate", data["Candidate Name"]],
+    ["University", data["University Name"]],
+    ["Campus", data["Campus"]],
+    ["Programme", data["Programme Selected"]],
+    ["Specialization", data["Course Specialization"]],
+    ["Application Type", data["Application Type"]],
+    ["Status", data["Application Status"]],
+    ["Contact", data["Registered Number"]],
+    ["Email", data["Registered Email ID"]],
+    ["Counsellor", data["Counsellor Name"]],
+    ["Team Leader", data["Team Leader"]],
+    ["Manager", data["Manager"]],
+    ["Course Fee", data["Course Fee"] ? "₹ " + Number(data["Course Fee"]).toLocaleString("en-IN") : ""],
+    ["Semester Fee", data["Semester Fee"] ? "₹ " + Number(data["Semester Fee"]).toLocaleString("en-IN") : ""],
+    ["Submitted", data["Form Submitted date"]],
+  ];
+
+  document.getElementById("detailsBox").innerHTML = rows
+    .filter(([, v]) => v)
+    .map(([k, v]) => `<div class="detail-row"><span class="detail-label">${k}</span><span class="detail-value">${v}</span></div>`)
+    .join("");
+
+  form.style.display = "none";
+  successScreen.classList.add("show");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function resetForm() {
+  form.reset();
+  form.style.display = "";
+  successScreen.classList.remove("show");
+  form.querySelectorAll(".invalid").forEach(el => el.classList.remove("invalid"));
+  form.querySelectorAll(".field-error.show").forEach(el => el.classList.remove("show"));
+  submitBtn.disabled = false;
+  submitBtn.innerHTML = "Submit Entry";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// TAB / PAGE SWITCHING
+// ══════════════════════════════════════════════════════════════════════════
+const mainEl = document.getElementById("mainEl");
+
+function switchPage(pageId) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById(pageId).classList.add("active");
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  document.querySelector(`.tab[data-page="${pageId}"]`).classList.add("active");
+  // Widen main for dashboard
+  if (pageId === "pageDashboard") mainEl.classList.add("dash-wide");
+  else mainEl.classList.remove("dash-wide");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// DASHBOARD ACCESS (PIN sent silently in background)
+// ══════════════════════════════════════════════════════════════════════════
+const DASHBOARD_PIN = "1234"; // matches Apps Script DASHBOARD_PASSWORD
+
+function requestDashboard() {
+  switchPage("pageDashboard");
+  if (_isCacheValid()) {
+    updateStats(allEntries);
+    populateFilters(allEntries);
+    renderTable(allEntries);
+  } else {
+    loadDashboard();
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// DASHBOARD DATA
+// ══════════════════════════════════════════════════════════════════════════
+let allEntries = [];
+// Global lookup map: key → entry object (populated during render)
+const _entryMap = new Map();
+
+function _buildSkeletonTable(rows = 10) {
+  const cols = 28;
+  const widths = [50,120,80,130,90,160,110,130,70,120,110,100,80,80,110,70,70,90,80,80,80,100,60,120,80,80,50,100];
+  let skRows = "";
+  for (let r = 0; r < rows; r++) {
+    skRows += `<tr class="skel-row">${widths.map(w =>
+      `<td><span class="skel" style="width:${w * (0.6 + Math.random()*0.5)|0}px;height:13px;"></span></td>`
+    ).join("")}</tr>`;
+  }
+  return `
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr>
+          <th style="width:70px;">Action</th>
+          <th>Candidate Name</th><th>Campus</th><th>Programme Selected</th>
+          <th>Form Submitted Date</th><th>Registered Email ID</th>
+          <th>Registered Number</th><th>Application Number</th>
+          <th>Referral Code</th><th>Counsellor Name</th><th>Team Leader</th>
+          <th>Manager</th><th>Admission Date</th><th>Application Type</th>
+          <th>Application Status</th><th>User ID</th><th>Password</th>
+          <th>Alternate Number</th><th>State</th><th>City</th><th>Source</th>
+          <th>University Name</th><th>Stream</th><th>Course Specialization</th>
+          <th>Course Fee</th><th>Semester Fee</th><th>RAG</th><th>Remarks</th>
+        </tr></thead>
+        <tbody>${skRows}</tbody>
+      </table>
+    </div>`;
+}
+
+function _showSkeletonStats() {
+  ["statTotal","statAppDone","statHalfForm","statTestPending","statPIPending",
+   "statAppHold","statAppCancelled","statAdmDone","statAdmCancelled",
+   "statOLReleased","statOLHold","statOLPending"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = `<span class="skel skel-stat" style="width:36px;"></span>`;
+  });
+  const rc = document.getElementById("resultCount");
+  if (rc) rc.textContent = "Loading…";
+}
+
+// ── Chunked loader: fetches all pages from server progressively ───────────
+async function _fetchPage(page, pageSize, forceRefresh) {
+  const res  = await fetch(API_URL, {
+    method : "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body   : JSON.stringify({ action: "getDashboard", page, pageSize, forceRefresh: !!forceRefresh }),
+  });
+  const text = await res.text();
+  try { return JSON.parse(text); }
+  catch { throw new Error("Invalid response from server — check your Apps Script deployment."); }
+}
+
+function _setProgressBar(pct, label) {
+  const bar = document.getElementById("loadProgressBar");
+  if (bar) bar.style.width = pct + "%";
+  const lbl = document.getElementById("loadStatusLabel");
+  if (lbl) lbl.textContent = label;
+}
+
+async function hardRefresh() {
+  await _idbClear();
+  _cacheTime = 0;
+  allEntries = [];
+  _setSyncStatus("syncing");
+  await loadDashboard(true);
+}
+
+async function loadDashboard(forceServerRefresh) {
+  const content = document.getElementById("dashContent");
+
+  // ── CASE 1 & 2: ANY cached data → show instantly, sync in background ───
+  if (allEntries.length > 0) {
+    // Render immediately on next frame for zero perceived latency
+    requestAnimationFrame(() => {
+      updateStats(allEntries);
+      populateFilters(allEntries);
+      renderTable(allEntries);
+    });
+    // Schedule background sync using idle time so UI stays responsive
+    const scheduleSync = window.requestIdleCallback || ((cb) => setTimeout(cb, 100));
+    scheduleSync(() => {
+      if (!_fetchingFull) _bgRefresh(!!forceServerRefresh);
+    });
+    return;
+  }
+
+  // ── CASE 3: No cache → gorgeous loading screen + streaming fetch ────────
+  _showSkeletonStats();
+  content.innerHTML = `
+    <div id="_loadScreen" style="padding:32px 20px;text-align:center;">
+      <div style="max-width:400px;margin:0 auto;">
+        <div style="width:64px;height:64px;margin:0 auto 20px;position:relative;">
+          <svg viewBox="0 0 64 64" style="width:64px;height:64px;animation:spin 2s linear infinite;">
+            <circle cx="32" cy="32" r="28" fill="none" stroke="#e8edf5" stroke-width="6"/>
+            <circle cx="32" cy="32" r="28" fill="none" stroke="url(#lg)" stroke-width="6"
+              stroke-dasharray="60 120" stroke-linecap="round"/>
+            <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="var(--primary)"/>
+              <stop offset="100%" stop-color="var(--accent,#f59e0b)"/>
+            </linearGradient></defs>
+          </svg>
+        </div>
+        <div id="loadStatusLabel" style="font-size:15px;font-weight:600;color:var(--primary);margin-bottom:8px;">Connecting…</div>
+        <div id="loadSubLabel" style="font-size:12px;color:var(--text-muted);margin-bottom:20px;">Loading your applications</div>
+        <div style="height:6px;background:#e8edf5;border-radius:99px;overflow:hidden;">
+          <div id="loadProgressBar" style="height:100%;background:linear-gradient(90deg,var(--primary),var(--accent,#f59e0b));border-radius:99px;width:5%;transition:width 0.5s cubic-bezier(.4,0,.2,1);"></div>
+        </div>
+        <div id="loadCountLabel" style="font-size:11px;color:var(--text-muted);margin-top:8px;"></div>
+      </div>
+    </div>
+    ${_buildSkeletonTable(8)}`;
+
+  let fakePct = 5; let fakeTimer;
+  const tickFake = () => {
+    fakePct = Math.min(fakePct + (85 - fakePct) * 0.07, 84);
+    _setProgressBar(Math.round(fakePct), "");
+  };
+  fakeTimer = setInterval(tickFake, 350);
+
+  const phases = ["Connecting to Google Sheets…","Reading spreadsheet…","Preparing your data…","Almost there…"];
+  let phaseIdx = 0;
+  const phaseTimer = setInterval(() => {
+    if (phaseIdx >= phases.length) { clearInterval(phaseTimer); return; }
+    const lbl = document.getElementById("loadStatusLabel");
+    if (lbl) lbl.textContent = phases[phaseIdx++];
+    else clearInterval(phaseTimer); // element gone, stop timer
+  }, 1800);
+
+  try {
+    // ── Stream: fetch page-0 first, show partial data right away ──────────
+    const PAGE_SIZE = 5000;
+    const first = await _fetchPage(0, PAGE_SIZE, !!forceServerRefresh);
+    if (!first || first.status !== "success") throw new Error(first?.message || "Server error");
+
+    allEntries = [...(first.data || [])];
+    const totalPages = first.totalPages || 1;
+    const totalRows  = first.totalRows  || allEntries.length;
+
+    // Show first batch IMMEDIATELY while rest loads in bg
+    _processEntries(0);
+    clearInterval(fakeTimer);
+    _setProgressBar(Math.round((1 / totalPages) * 85) + 10, "");
+    const _sl = document.getElementById("loadStatusLabel");
+    const _cl = document.getElementById("loadCountLabel");
+    if (_sl) _sl.textContent = "Loaded first batch…";
+    if (_cl) _cl.textContent = allEntries.length.toLocaleString() + " of ~" + totalRows.toLocaleString() + " records";
+
+    // Update stats cards instantly (doesn't touch dashContent)
+    requestAnimationFrame(() => {
+      updateStats(allEntries);
+      populateFilters(allEntries);
+      // Don't call renderTable here — would destroy the loading screen
+    });
+
+    // ── Fetch ALL remaining pages in parallel ──────────────────────────────
+    if (totalPages > 1) {
+      const remaining = Array.from({length: totalPages - 1}, (_, i) =>
+        _fetchPage(i + 1, PAGE_SIZE, false));
+
+      // Use Promise.allSettled so one failure doesn't kill the rest
+      const results = await Promise.allSettled(remaining);
+      let added = 0;
+      for (const r of results) {
+        if (r.status === "fulfilled" && r.value?.status === "success") {
+          const prev = allEntries.length;
+          allEntries.push(...(r.value.data || []));
+          _processEntries(prev);
+          added += r.value.data?.length || 0;
+        }
+      }
+
+      const pct = Math.round(((allEntries.length) / totalRows) * 85) + 10;
+      _setProgressBar(Math.min(pct, 95), "");
+      const _cl2 = document.getElementById("loadCountLabel");
+      if (_cl2) _cl2.textContent = allEntries.length.toLocaleString() + " records loaded";
+    }
+
+    // Final save + render
+    _cacheTime = Date.now();
+    await _idbSave(allEntries);
+    _setProgressBar(100, "");
+    const _sl2 = document.getElementById("loadStatusLabel");
+    if (_sl2) _sl2.textContent = "✅ Ready!";
+
+    // Smooth transition: clear loader then render table cleanly
+    clearInterval(phaseTimer);
+    setTimeout(() => {
+      // Wipe dashContent cleanly before rendering table
+      const dc = document.getElementById("dashContent");
+      if (dc) { dc.style.opacity = "0"; dc.style.transition = "opacity 0.25s"; }
+      setTimeout(() => {
+        updateStats(allEntries);
+        populateFilters(allEntries);
+        renderTable(allEntries);
+        _setSyncStatus("done");
+        if (dc) { requestAnimationFrame(() => { dc.style.opacity = "1"; }); }
+      }, 250);
+    }, 300);
+
+  } catch (err) {
+    clearInterval(fakeTimer); clearInterval(phaseTimer);
+    content.innerHTML = `
+      <div class="dash-empty" style="padding:40px 20px;text-align:center;">
+        <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
+        <div style="font-size:15px;font-weight:600;color:#c53030;margin-bottom:8px;">Failed to load data</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px;">${escapeHtml(err.message || "Unknown error")}</div>
+        <button class="btn btn-primary" onclick="hardRefresh()">🔄 Try Again</button>
+      </div>`;
+    _setSyncStatus("error");
+  }
+}
+
+function animateNum(id, target) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  // Always clear skeleton markup first so "0" values render correctly
+  if (el.querySelector && el.querySelector(".skel")) el.innerHTML = "0";
+  const start = parseInt(el.textContent) || 0;
+  // Always write the value (handles 0-after-skeleton case)
+  el.textContent = target;
+  if (start === target) return;
+  const duration = 500;
+  const startTime = performance.now();
+  function step(now) {
+    const progress = Math.min((now - startTime) / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.round(start + (target - start) * ease);
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+// Apply stats returned directly from server (for instant stat-card population)
+function _applyServerStats(stats, total) {
+  animateNum("statTotal",        total || 0);
+  animateNum("statAppDone",      stats["Application Done"]      || 0);
+  animateNum("statHalfForm",     stats["Half Form"]             || 0);
+  animateNum("statTestPending",  stats["Test Pending"]          || 0);
+  animateNum("statPIPending",    stats["PI Pending"]            || 0);
+  animateNum("statAppHold",      stats["Application Hold"]      || 0);
+  animateNum("statAppCancelled", stats["Application Cancelled"] || 0);
+  animateNum("statAdmDone",      stats["Admission Done"]        || 0);
+  animateNum("statAdmCancelled", stats["Admission Cancelled"]   || 0);
+  animateNum("statOLReleased",   stats["OL Released"]           || 0);
+  animateNum("statOLHold",       stats["OL on Hold"]            || 0);
+  animateNum("statOLPending",    stats["OL Pending"]            || 0);
+  const rc = document.getElementById("resultCount");
+  if (rc) rc.textContent = (total || 0).toLocaleString() + " entries";
+}
+
+function updateStats(entries) {
+  const counts = {
+    "Application Done":      0,
+    "Half Form":             0,
+    "Test Pending":          0,
+    "PI Pending":            0,
+    "Application Hold":      0,
+    "Application Cancelled": 0,
+    "Admission Done":        0,
+    "Admission Cancelled":   0,
+    "OL Released":           0,
+    "OL on Hold":            0,
+    "OL Pending":            0,
+  };
+  entries.forEach(e => {
+    const s = (e["Application Status"] || "").trim();
+    if (s in counts) counts[s]++;
+  });
+
+  animateNum("statTotal",        entries.length);
+  animateNum("statAppDone",      counts["Application Done"]);
+  animateNum("statHalfForm",     counts["Half Form"]);
+  animateNum("statTestPending",  counts["Test Pending"]);
+  animateNum("statPIPending",    counts["PI Pending"]);
+  animateNum("statAppHold",      counts["Application Hold"]);
+  animateNum("statAppCancelled", counts["Application Cancelled"]);
+  animateNum("statAdmDone",      counts["Admission Done"]);
+  animateNum("statAdmCancelled", counts["Admission Cancelled"]);
+  animateNum("statOLReleased",   counts["OL Released"]);
+  animateNum("statOLHold",       counts["OL on Hold"]);
+  animateNum("statOLPending",    counts["OL Pending"]);
+
+  const rc = document.getElementById("resultCount");
+  if (rc) rc.textContent = entries.length + " entr" + (entries.length === 1 ? "y" : "ies");
+}
+
+const MON_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+function parseDate(str) {
+  if (!str) return null;
+  str = String(str).trim();
+
+  // 1. "dd-Mon-yyyy" e.g. "03-Jan-2026"
+  const mMon = str.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{4})/);
+  if (mMon) {
+    const monIdx = MON_NAMES.findIndex(m => m.toLowerCase() === mMon[2].toLowerCase());
+    if (monIdx !== -1) return new Date(+mMon[3], monIdx, +mMon[1]);
+  }
+
+  // 2. "dd-MM-yyyy" or "dd/MM/yyyy" e.g. "30-04-2026"
+  const mDMY = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+  if (mDMY) return new Date(+mDMY[3], +mDMY[2]-1, +mDMY[1]);
+
+  // 3. "yyyy-MM-dd" e.g. "2026-04-30"
+  const mYMD = str.match(/^(\d{4})[\/\-](\d{2})[\/\-](\d{2})/);
+  if (mYMD) return new Date(+mYMD[1], +mYMD[2]-1, +mYMD[3]);
+
+  // 4. Fallback — browser Date parser (handles "Thu Feb 05 2026 ...")
+  const d = new Date(str);
+  if (!isNaN(d)) return d;
+
+  return null;
+}
+
+function fmtDateDisplay(str) {
+  const d = parseDate(str);
+  if (!d || isNaN(d)) return str || "";
+  const dd  = String(d.getDate()).padStart(2, "0");
+  const mon = MON_NAMES[d.getMonth()];
+  const yy  = d.getFullYear();
+  return dd + "-" + mon + "-" + yy;
+}
+
+function populateFilters(entries) {
+  const uniq = (key) => [...new Set(entries.map(e => (e[key] || "").toString().trim()).filter(Boolean))].sort();
+  const fill = (selEl, values, label) => {
+    selEl.innerHTML = `<option value="">${label}</option>` + values.map(v => `<option>${escapeHtml(v)}</option>`).join("");
+  };
+  fill(document.getElementById("filterUniversity"), uniq("University Name"), "All Universities");
+  fill(document.getElementById("filterCampus"), uniq("Campus"), "All Campuses");
+  fill(document.getElementById("filterStatus"), uniq("Application Status"), "All Statuses");
+  fill(document.getElementById("filterStream"), uniq("Stream"), "All Streams");
+  fill(document.getElementById("filterManager"), uniq("Manager"), "All Managers");
+  fill(document.getElementById("filterTeamLeader"), uniq("Team Leader"), "All Team Leaders");
+  fill(document.getElementById("filterCounsellor"), uniq("Counsellor Name"), "All Counsellors");
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// FAST PAGINATED TABLE
+// ══════════════════════════════════════════════════════════════════════════
+const PAGE_SIZE = 100;
+let _currentFiltered = [];
+let _currentPage = 0;
+
+function renderTable(entries) {
+  _currentFiltered = entries;
+  _currentPage = 0;
+  _renderPage();
+}
+
+function _renderPage() {
+  const content = document.getElementById("dashContent");
+  const entries = _currentFiltered;
+
+  if (!entries.length) {
+    content.innerHTML = `<div class="dash-empty">No applications found</div>`;
+    return;
+  }
+
+  const start = _currentPage * PAGE_SIZE;
+  const end   = Math.min(start + PAGE_SIZE, entries.length);
+  const slice = entries.slice(start, end);
+  const total = entries.length;
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+
+  // Build rows using pre-computed cached values — no extra work per cell
+  let rowsHtml = "";
+  for (let i = 0; i < slice.length; i++) {
+    const e = slice[i];
+    const key = String(e["Application Number"] || e._idx);
+    // Ensure map is populated (handles filtered entries not yet in map)
+    _entryMap.set(key, e);
+    rowsHtml += `<tr>
+      <td><button class="edit-btn" data-key="${escapeHtml(key)}" onclick="handleEditClick(this,'${escapeHtml(key)}')">✏ Edit</button></td>
+      <td>${escapeHtml(e["Candidate Name"] || "")}</td>
+      <td>${escapeHtml(e["Campus"] || "")}</td>
+      <td>${escapeHtml(e["Programme Selected"] || "")}</td>
+      <td>${e._dateFmt || escapeHtml(e["Form Submitted date"] || "")}</td>
+      <td>${escapeHtml(e["Registered Email ID"] || "")}</td>
+      <td>${escapeHtml(e["Registered Number"] || "")}</td>
+      <td><strong>${escapeHtml(e["Application Number"] || "")}</strong></td>
+      <td>${escapeHtml(e["Referral Code"] || "")}</td>
+      <td>${escapeHtml(e["Counsellor Name"] || "")}</td>
+      <td>${escapeHtml(e["Team Leader"] || "")}</td>
+      <td>${escapeHtml(e["Manager"] || "")}</td>
+      <td>${escapeHtml(e["Admission Date"] || "")}</td>
+      <td>${escapeHtml(e["Application Type"] || "")}</td>
+      <td>${e._statusHtml || renderStatus(e["Application Status"])}</td>
+      <td>${escapeHtml(e["User ID"] || "")}</td>
+      <td>${escapeHtml(e["Password"] || "")}</td>
+      <td>${escapeHtml(e["Alternate Number"] || "")}</td>
+      <td>${escapeHtml(e["State"] || "")}</td>
+      <td>${escapeHtml(e["City"] || "")}</td>
+      <td>${escapeHtml(e["Source"] || "")}</td>
+      <td>${escapeHtml(e["University Name"] || "")}</td>
+      <td>${escapeHtml(e["Stream"] || "")}</td>
+      <td>${escapeHtml(e["Course Specialization"] || "")}</td>
+      <td style="text-align:right;">${e._courseFeeHtml || fmtMoney(e["Course Fee"])}</td>
+      <td style="text-align:right;">${e._semFeeHtml || fmtMoney(e["Semester Fee"])}</td>
+      <td>${e._ragHtml || renderRAG(e["RAG"] || "")}</td>
+      <td>${escapeHtml(e["Remarks"] || "")}</td>
+    </tr>`;
+  }
+
+  const prevDis = _currentPage === 0 ? "disabled" : "";
+  const nextDis = _currentPage >= totalPages - 1 ? "disabled" : "";
+
+  content.innerHTML = `
+    <div class="table-wrap" id="tableScrollWrap">
+      <table class="data-table">
+        <thead><tr>
+          <th style="width:70px;">Action</th>
+          <th>Candidate Name</th><th>Campus</th><th>Programme Selected</th>
+          <th>Form Submitted Date</th><th>Registered Email ID</th>
+          <th>Registered Number</th><th>Application Number</th>
+          <th>Referral Code</th><th>Counsellor Name</th><th>Team Leader</th>
+          <th>Manager</th><th>Admission Date</th><th>Application Type</th>
+          <th>Application Status</th><th>User ID</th><th>Password</th>
+          <th>Alternate Number</th><th>State</th><th>City</th><th>Source</th>
+          <th>University Name</th><th>Stream</th><th>Course Specialization</th>
+          <th>Course Fee</th><th>Semester Fee</th><th>RAG</th><th>Remarks</th>
+        </tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding:0 4px;flex-wrap:wrap;gap:8px;">
+      <span style="font-size:12px;color:var(--text-muted);font-weight:500;">
+        Showing <strong>${(start+1).toLocaleString()}–${end.toLocaleString()}</strong> of <strong>${total.toLocaleString()}</strong> entries
+      </span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <button class="btn btn-secondary btn-sm" onclick="changePage(-1)" ${prevDis} style="padding:6px 14px;font-size:12px;">← Prev</button>
+        <span style="font-size:12px;font-weight:600;color:var(--primary);min-width:80px;text-align:center;">Page ${_currentPage+1} / ${totalPages}</span>
+        <button class="btn btn-secondary btn-sm" onclick="changePage(1)" ${nextDis} style="padding:6px 14px;font-size:12px;">Next →</button>
+      </div>
+    </div>`;
+}
+
+function changePage(delta) {
+  const totalPages = Math.ceil(_currentFiltered.length / PAGE_SIZE);
+  const newPage = Math.max(0, Math.min(_currentPage + delta, totalPages - 1));
+  if (newPage === _currentPage) return;
+  _currentPage = newPage;
+  _renderPage();
+  // Scroll table into view smoothly
+  setTimeout(() => document.getElementById("tableScrollWrap")?.scrollIntoView({ behavior: "smooth", block: "start" }), 30);
+}
+
+// ── Edit entry by key (safe — reads from map, no giant onclick JSON) ──────
+function handleEditClick(btn, key) {
+  btn.disabled = true;
+  btn.textContent = "…";
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = "✏ Edit";
+  }, 2000);
+  openEditById(key);
+}
+
+function openEditById(key) {
+  const entry = _entryMap.get(String(key));
+  if (!entry) {
+    toast("Entry not found — please click ⟳ Refresh and try again", "error");
+    return;
+  }
+  openEditForm(entry);
+}
+
+function fmtMoney(v) {
+  if (!v && v !== 0) return "";
+  const n = Number(String(v).replace(/[^0-9.-]/g, ""));
+  if (isNaN(n)) return escapeHtml(v);
+  return "₹ " + n.toLocaleString("en-IN");
+}
+
+function renderRAG(rag) {
+  if (!rag) return "";
+  const colors = { Red: "#e53935", Amber: "#f59e0b", Green: "#22c55e" };
+  const color = colors[rag] || "#888";
+  return `<span style="display:inline-block;padding:2px 10px;border-radius:12px;background:${color};color:#fff;font-size:12px;font-weight:600;">${rag}</span>`;
+}
+
+function renderStatus(status) {
+  if (!status) return "";
+  const s = String(status);
+  const colors = {
+    "Application Done":      "#276749",
+    "Admission Done":        "#276749",
+    "Half Form":             "#b7791f",
+    "Test Pending":          "#b7791f",
+    "PI Pending":            "#d97706",
+    "Application Hold":      "#718096",
+    "Application Cancelled": "#c53030",
+    "Admission Cancelled":   "#c53030",
+    "OL Released":           "#065f46",
+    "OL on Hold":            "#1e40af",
+    "OL Pending":            "#6d28d9"
+  };
+  const color = colors[s] || "#64748b";
+  return `<span style="display:inline-block;padding:3px 10px;border-radius:12px;background:${color}15;color:${color};font-size:11px;font-weight:600;">${escapeHtml(s)}</span>`;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// FILTERS  (debounced search + instant dropdowns)
+// ══════════════════════════════════════════════════════════════════════════
+const searchBox       = document.getElementById("searchBox");
+const filterUniversity = document.getElementById("filterUniversity");
+const filterCampus    = document.getElementById("filterCampus");
+const filterStatus    = document.getElementById("filterStatus");
+const filterStream    = document.getElementById("filterStream");
+const filterManager   = document.getElementById("filterManager");
+const filterTeamLeader= document.getElementById("filterTeamLeader");
+const filterCounsellor = document.getElementById("filterCounsellor");
+const filterDateFrom  = document.getElementById("filterDateFrom");
+const filterDateTo    = document.getElementById("filterDateTo");
+
+function debounce(fn, ms) {
+  let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
+}
+
+function applyFilters() {
+  const q  = searchBox.value.trim().toLowerCase();
+  const u  = filterUniversity.value.trim();
+  const c  = filterCampus.value.trim();
+  const st = filterStatus.value.trim();
+  const sm = filterStream.value.trim();
+  const m  = filterManager.value.trim();
+  const tl = filterTeamLeader.value.trim();
+  const cn = filterCounsellor.value.trim();
+  const df = filterDateFrom.value ? new Date(filterDateFrom.value) : null;
+  const dt = filterDateTo.value   ? new Date(filterDateTo.value + "T23:59:59") : null;
+
+  const dfInt = df ? df.getUTCFullYear()*10000 + (df.getUTCMonth()+1)*100 + df.getUTCDate() : null;
+  const dtInt = dt ? dt.getUTCFullYear()*10000 + (dt.getUTCMonth()+1)*100 + dt.getUTCDate() : null;
+
+  const filtered = allEntries.filter(row => {
+    if (u  && (row["University Name"]    || "").trim() !== u)  return false;
+    if (c  && (row["Campus"]             || "").trim() !== c)  return false;
+    if (st && (row["Application Status"] || "").trim() !== st) return false;
+    if (sm && (row["Stream"]             || "").trim() !== sm) return false;
+    if (m  && (row["Manager"]            || "").trim() !== m)  return false;
+    if (tl && (row["Team Leader"]        || "").trim() !== tl) return false;
+    if (cn && (row["Counsellor Name"]     || "").trim() !== cn) return false;
+    if (dfInt || dtInt) {
+      const d = parseDate(row["Form Submitted date"]);
+      if (!d) return false;
+      const dInt = d.getFullYear()*10000 + (d.getMonth()+1)*100 + d.getDate();
+      if (dfInt && dInt < dfInt) return false;
+      if (dtInt && dInt > dtInt) return false;
+    }
+    if (q && !(row._searchStr || "").includes(q)) return false;
+    return true;
+  });
+
+  renderTable(filtered);
+  updateStats(filtered);
+
+  [filterUniversity,filterCampus,filterStatus,filterStream,filterManager,filterTeamLeader,filterCounsellor].forEach(sel => {
+    sel.classList.toggle("active", !!sel.value);
+  });
+  const dateWrap = document.querySelector(".date-range-wrap");
+  if (dateWrap) dateWrap.style.borderColor = (filterDateFrom.value || filterDateTo.value) ? "var(--primary)" : "";
+}
+
+function clearFilters() {
+  searchBox.value = "";
+  [filterUniversity,filterCampus,filterStatus,filterStream,filterManager,filterTeamLeader,filterCounsellor].forEach(s => s.selectedIndex = 0);
+  filterDateFrom.value = "";
+  filterDateTo.value = "";
+  const dateWrap = document.querySelector(".date-range-wrap");
+  if (dateWrap) dateWrap.style.borderColor = "";
+  renderTable(allEntries);
+  updateStats(allEntries);
+}
+
+const _debouncedApply = debounce(applyFilters, 220);
+searchBox.addEventListener("input", _debouncedApply);
+[filterUniversity,filterCampus,filterStatus,filterStream,filterManager,filterTeamLeader,filterCounsellor,filterDateFrom,filterDateTo]
+  .forEach(el => el.addEventListener("change", applyFilters));
+
+
+// ══════════════════════════════════════════════════════════════════════════
+// CSV EXPORT
+// ══════════════════════════════════════════════════════════════════════════
+function exportCSV() {
+  if (!allEntries.length) { toast("No data to export", "error"); return; }
+
+  const headers = [
+    "Candidate Name", "Campus", "Programme Selected", "Form Submitted date",
+    "Registered Email ID", "Registered Number", "Application Number", "Referral Code",
+    "Counsellor Name", "Team Leader", "Manager",
+    "Admission Date", "Application Type", "Application Status",
+    "User ID", "Password", "Alternate Number",
+    "State", "City", "Source",
+    "University Name", "Stream",
+    "Course Fee", "Semester Fee", "RAG", "Remarks"
+  ];
+  const escape = (v) => {
+    const s = (v == null ? "" : String(v));
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
+  };
+  const csv = [
+    headers.join(","),
+    ...allEntries.map(e => headers.map(h => escape(e[h])).join(","))
+  ].join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `applications-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("CSV downloaded", "success");
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// EDIT MODAL
+// ══════════════════════════════════════════════════════════════════════════
+let currentEditEntry = null;
+
+// Entry can be object or JSON string — handles both safely
+function openEditForm(entryOrJson) {
+  try {
+    currentEditEntry = (typeof entryOrJson === "object" && entryOrJson !== null)
+      ? entryOrJson
+      : JSON.parse(entryOrJson);
+  } catch(e) {
+    toast("Could not open edit form — invalid data", "error");
+    return;
+  }
+
+  const editForm = document.getElementById("editForm");
+
+  editForm.querySelectorAll("input, select, textarea").forEach(field => {
+    if (!field.name || field.name === "_rowIndex") return;
+    const raw = currentEditEntry[field.name];
+    const val = (raw == null ? "" : String(raw)).trim();
+
+    if (field.tagName === "SELECT") {
+      // Try exact value match first
+      let matched = false;
+      for (const opt of field.options) {
+        if (opt.value.trim() === val || opt.text.trim() === val) {
+          field.value = opt.value;
+          matched = true;
+          break;
+        }
+      }
+      // Case-insensitive fallback
+      if (!matched && val) {
+        const vLow = val.toLowerCase();
+        for (const opt of field.options) {
+          if (opt.value.toLowerCase() === vLow || opt.text.toLowerCase() === vLow) {
+            field.value = opt.value;
+            matched = true;
+            break;
+          }
+        }
+      }
+      // If still not matched, add as dynamic option so data isn't lost
+      if (!matched && val) {
+        const newOpt = document.createElement("option");
+        newOpt.value = val;
+        newOpt.textContent = val;
+        newOpt.dataset.dynamic = "1";
+        field.appendChild(newOpt);
+        field.value = val;
+      }
+    } else {
+      field.value = val;
+    }
+  });
+
+  document.getElementById("editRowIndex").value = currentEditEntry["Application Number"] || "";
+
+  const subtitle = document.getElementById("editModalSubtitle");
+  if (subtitle) {
+    const name   = currentEditEntry["Candidate Name"] || "Unknown";
+    const appNum = currentEditEntry["Application Number"] || "";
+    subtitle.textContent = name + (appNum ? " · " + appNum : "");
+  }
+
+  const modal = document.getElementById("editModal");
+  // Remove any leftover dynamic options from previous open
+  modal.querySelectorAll("option[data-dynamic]").forEach(o => {
+    if (o.parentElement.value !== o.value) o.remove();
+  });
+  modal.style.opacity = "0";
+  modal.classList.add("open");
+  requestAnimationFrame(() => requestAnimationFrame(() => { modal.style.opacity = "1"; }));
+  document.body.style.overflow = "hidden";
+}
+
+function closeEditModal() {
+  const modal = document.getElementById("editModal");
+  modal.style.opacity = "0";
+  setTimeout(() => {
+    modal.classList.remove("open");
+    modal.style.opacity = "";
+    document.body.style.overflow = "";
+    currentEditEntry = null;
+    // Clean up dynamic options
+    document.querySelectorAll("option[data-dynamic]").forEach(o => o.remove());
+  }, 200);
+}
+
+document.getElementById("editModal").addEventListener("click", function(e) {
+  if (e.target === this) closeEditModal();
+});
+
+async function saveEditForm() {
+  const editForm = document.getElementById("editForm");
+
+  const data = {};
+  new FormData(editForm).forEach((value, key) => { data[key] = value.trim(); });
+
+  if (data["Course Specialization"]) {
+    data["Programme Selected"] = (data["Programme Selected"] ? data["Programme Selected"] + " - " : "") + data["Course Specialization"];
+    delete data["Course Specialization"];
+  }
+
+  if (!data["Candidate Name"] || !data["Application Number"]) {
+    toast("Candidate Name and Application Number are required", "error");
+    return;
+  }
+
+  // ── OPTIMISTIC UPDATE: apply changes to in-memory entry instantly ──────
+  const snapshotEntry = currentEditEntry ? { ...currentEditEntry } : null;
+  if (currentEditEntry) {
+    Object.assign(currentEditEntry, data);
+    currentEditEntry._statusHtml    = renderStatus(currentEditEntry["Application Status"]);
+    currentEditEntry._dateFmt       = fmtDateDisplay(currentEditEntry["Form Submitted date"]);
+    currentEditEntry._ragHtml       = renderRAG(currentEditEntry["RAG"] || "");
+    currentEditEntry._courseFeeHtml = fmtMoney(currentEditEntry["Course Fee"]);
+    currentEditEntry._semFeeHtml    = fmtMoney(currentEditEntry["Semester Fee"]);
+    currentEditEntry._searchStr     = Object.entries(currentEditEntry)
+      .filter(([k]) => k !== "Password" && !k.startsWith("_"))
+      .map(([, v]) => String(v == null ? "" : v)).join("·").toLowerCase();
+  }
+
+  // Close modal & re-render table immediately — user sees result at once
+  toast("✅ Application updated!", "success");
+  closeEditModal();
+  setTimeout(() => _renderPage(), 60);
+
+  // ── Send to server in background ────────────────────────────────────────
+  try {
+    const res  = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "updateApplication", ...data }),
+    });
+    const text = await res.text();
+    let json;
+    try { json = JSON.parse(text); }
+    catch { json = { status: "error", message: "Non-JSON response — Apps Script may need updating" }; }
+
+    if (json.status === "error" && json.message && /unknown action/i.test(json.message)) {
+      showUpdateScriptHelper();
+      return;
+    }
+    if (json.status !== "success") {
+      // Roll back optimistic update on failure
+      if (snapshotEntry && currentEditEntry == null) {
+        // entry is already out of modal scope; find it in allEntries and restore
+        const idx = allEntries.findIndex(e => String(e["Application Number"]) === String(snapshotEntry["Application Number"]));
+        if (idx !== -1) { Object.assign(allEntries[idx], snapshotEntry); _renderPage(); }
+      }
+      toast("❌ Save failed — " + (json.message || "check Apps Script logs"), "error");
+      return;
+    }
+    // Success confirmed — invalidate cache so next Refresh gets fresh data
+    _cacheTime = 0;
+  } catch (netErr) {
+    console.error("saveEditForm network error:", netErr);
+    toast("⚠️ Saved locally but couldn't reach server — check connection", "error");
+  }
+}
+
+function showUpdateScriptHelper() {
+  const code = `// ── ADD THIS INSIDE YOUR doPost(e) if/else chain ──────────────────────
+else if (action === "updateApplication") {
+  try {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    const data  = e.postData ? JSON.parse(e.postData.contents) : {};
+    const appNum = String(data["Application Number"] || "").trim();
+    if (!appNum) return json({status:"error", message:"Application Number missing"});
+
+    const lastCol = sheet.getLastColumn();
+    const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+    const appNumCol = headers.indexOf("Application Number");
+    if (appNumCol === -1) return json({status:"error", message:"Column 'Application Number' not found in sheet"});
+
+    const lastRow = sheet.getLastRow();
+    let foundRow = -1;
+    const colData = sheet.getRange(2, appNumCol + 1, lastRow - 1, 1).getValues();
+    for (let r = 0; r < colData.length; r++) {
+      if (String(colData[r][0]).trim() === appNum) { foundRow = r + 2; break; }
+    }
+    if (foundRow === -1) return json({status:"error", message:"Row not found for: " + appNum});
+
+    const SKIP = new Set(["Application Number", "Form Submitted date", "action", "_rowIndex"]);
+    headers.forEach((h, i) => {
+      if (!SKIP.has(h) && data[h] !== undefined && data[h] !== null) {
+        sheet.getRange(foundRow, i + 1).setValue(data[h]);
+      }
+    });
+    return json({status:"success"});
+  } catch(ex) {
+    return json({status:"error", message: ex.toString()});
+  }
+}
+
+// Helper (add once near top of doPost if not already present)
+function json(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}`;
+
+  const overlay = document.createElement("div");
+  overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;";
+  overlay.innerHTML = `
+    <div style="background:#fff;border-radius:16px;max-width:720px;width:100%;max-height:90vh;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.3);">
+      <div style="background:#c53030;color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-weight:700;font-size:15px;">⚠️ Apps Script Update Required</div>
+          <div style="font-size:12px;opacity:0.85;margin-top:3px;">Paste this block inside your <code style="background:rgba(255,255,255,0.2);padding:1px 5px;border-radius:3px;">doPost(e)</code> to enable Edit/Save.</div>
+        </div>
+        <button onclick="this.closest('div[style*=fixed]').remove()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;border-radius:50%;width:30px;height:30px;font-size:20px;cursor:pointer;line-height:1;flex-shrink:0;">×</button>
+      </div>
+      <div style="padding:20px;overflow-y:auto;max-height:calc(90vh - 70px);">
+        <p style="font-size:13px;color:#555;margin:0 0 12px;">Copy and paste inside your <code style="background:#f1f5f9;padding:2px 6px;border-radius:4px;">doPost(e)</code> if/else chain, then <strong>re-deploy the script as a new version</strong>.</p>
+        <pre id="_scriptCode" style="background:#1e1e2e;color:#cdd6f4;padding:16px;border-radius:10px;font-size:11px;overflow-x:auto;line-height:1.7;white-space:pre-wrap;margin:0;">${escapeHtml(code)}</pre>
+        <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;">
+          <button onclick="navigator.clipboard.writeText(document.getElementById('_scriptCode').textContent).then(()=>{this.textContent='✅ Copied!';setTimeout(()=>this.textContent='📋 Copy Code',2000)})" style="background:#1a365d;color:#fff;border:none;border-radius:8px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;">📋 Copy Code</button>
+          <button onclick="this.closest('div[style*=fixed]').remove()" style="background:#f1f5f9;color:#333;border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;">Close</button>
+        </div>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+
+
+</script>
+</body>
+</html>
