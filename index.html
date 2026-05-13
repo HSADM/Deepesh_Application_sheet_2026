@@ -527,6 +527,45 @@
     line-height: 1.3;
   }
 
+
+  /* ── Searchable Select Component ─────────────────────────────── */
+  .ss-wrap { position: relative; width: 100%; }
+  .ss-wrap select { display: none !important; }
+  .ss-display {
+    display: flex; align-items: center; justify-content: space-between;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    padding: 0 14px; background: #fff; cursor: pointer;
+    font-size: 14px; color: var(--text); min-height: 44px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .ss-display:hover { border-color: var(--primary); }
+  .ss-display.open  { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(26,54,93,0.1); border-radius: 10px 10px 0 0; }
+  .ss-input {
+    flex: 1; border: none; outline: none; background: transparent;
+    font-size: 14px; color: var(--text); cursor: pointer;
+    padding: 10px 0; min-width: 0;
+  }
+  .ss-input::placeholder { color: #a0aec0; }
+  .ss-input.typing { cursor: text; }
+  .ss-arrow { font-size: 10px; color: #a0aec0; transition: transform 0.2s; flex-shrink: 0; margin-left: 6px; }
+  .ss-display.open .ss-arrow { transform: rotate(180deg); }
+  .ss-dropdown {
+    display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 9999;
+    background: #fff; border: 1.5px solid var(--primary);
+    border-top: none; border-radius: 0 0 10px 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    max-height: 240px; overflow-y: auto;
+  }
+  .ss-dropdown.open { display: block; }
+  .ss-opt {
+    padding: 9px 14px; font-size: 13px; cursor: pointer;
+    color: var(--text); transition: background 0.12s;
+  }
+  .ss-opt:hover { background: #eef2ff; }
+  .ss-opt.selected { background: var(--primary); color: #fff; font-weight: 600; }
+  .ss-opt.hidden { display: none; }
+  .ss-empty { padding: 12px 14px; font-size: 13px; color: #a0aec0; text-align: center; }
+
   /* ── Filter Bar ── */
   .filter-bar {
     display: flex;
@@ -1102,6 +1141,20 @@
             <option>Meenal solanki</option>
             <option>Sneha Shilvanth</option>
             <option>Nikita Jannu</option>
+            <option>Srushti</option>
+            <option>Pooja Navale</option>
+            <option>Sachin Paliwal</option>
+            <option>Manisha Kumari</option>
+            <option>Sazreen Ansari</option>
+            <option>Nupoor Vartak</option>
+            <option>Omkar Ghadge</option>
+            <option>Samiya Ansari</option>
+            <option>Aafiya Shaikh</option>
+            <option>Shayan Raza</option>
+            <option>Aarya Pore</option>
+            <option>Diksha Surwade</option>
+            <option>Mahek Imran Shaikh</option>
+            <option>Sudipta Kumar Pradhan</option>
           </select>
           <div class="field-error">Counsellor name is required</div>
         </div>
@@ -1748,6 +1801,20 @@
               <option>Meenal solanki</option>
               <option>Sneha Shilvanth</option>
               <option>Nikita Jannu</option>
+              <option>Srushti</option>
+              <option>Pooja Navale</option>
+              <option>Sachin Paliwal</option>
+              <option>Manisha Kumari</option>
+              <option>Sazreen Ansari</option>
+              <option>Nupoor Vartak</option>
+              <option>Omkar Ghadge</option>
+              <option>Samiya Ansari</option>
+              <option>Aafiya Shaikh</option>
+              <option>Shayan Raza</option>
+              <option>Aarya Pore</option>
+              <option>Diksha Surwade</option>
+              <option>Mahek Imran Shaikh</option>
+              <option>Sudipta Kumar Pradhan</option>
             </select>
           </div>
           <div class="field"><label>Team Leader</label><input type="text" name="Team Leader"></div>
@@ -2394,6 +2461,210 @@ function _setProgressBar(pct, label) {
   if (lbl) lbl.textContent = label;
 }
 
+// ════════════════════════════════════════════════════════════════
+// SearchableSelect — inline search inside the trigger button
+// ════════════════════════════════════════════════════════════════
+class SearchableSelect {
+  constructor(sel) {
+    if (!sel || sel._ss) return;
+    sel._ss = this;
+    this.sel = sel;
+    this.placeholder = (sel.options[0] && !sel.options[0].value) ? sel.options[0].text : "Select...";
+    this._build();
+    this._sync();
+    const obs = new MutationObserver(() => this._rebuildList());
+    obs.observe(sel, { childList: true });
+  }
+
+  _build() {
+    const sel = this.sel;
+    const wrap = document.createElement("div");
+    wrap.className = "ss-wrap";
+    sel.parentNode.insertBefore(wrap, sel);
+    wrap.appendChild(sel);
+    this.wrap = wrap;
+
+    // Display — contains inline input + arrow
+    const disp = document.createElement("div");
+    disp.className = "ss-display";
+    disp.innerHTML = '<input class="ss-input" readonly="true" /><span class="ss-arrow">&#9660;</span>';
+    wrap.appendChild(disp);
+    this.disp = disp;
+    this.input = disp.querySelector(".ss-input");
+
+    // Dropdown list only (no separate search box)
+    const drop = document.createElement("div");
+    drop.className = "ss-dropdown";
+    wrap.appendChild(drop);
+    this.drop = drop;
+
+    this._buildList();
+    this._attachEvents();
+  }
+
+  _buildList() {
+    this.drop.innerHTML = "";
+    Array.from(this.sel.options).forEach(function(opt) {
+      const div = document.createElement("div");
+      div.className = "ss-opt";
+      div.textContent = opt.text;
+      div.dataset.value = opt.value;
+      div.setAttribute("tabindex", "-1");
+      this.drop.appendChild(div);
+    }, this);
+  }
+
+  _rebuildList() {
+    const prev = this.sel.value;
+    this._buildList();
+    this._filter("");
+    this.sel.value = prev;
+    this._sync();
+  }
+
+  _sync() {
+    const sel = this.sel;
+    const opt = sel.options[sel.selectedIndex];
+    if (opt && opt.value) {
+      this.input.value = opt.text;
+      this.input.style.color = "var(--text)";
+    } else {
+      this.input.value = "";
+      this.input.placeholder = this.placeholder;
+    }
+    this.drop.querySelectorAll(".ss-opt").forEach(function(d) {
+      d.classList.toggle("selected", d.dataset.value === sel.value);
+    });
+  }
+
+  _filter(q) {
+    const lower = q.toLowerCase();
+    let visible = 0;
+    this.drop.querySelectorAll(".ss-opt").forEach(function(d) {
+      const match = !lower || d.textContent.toLowerCase().indexOf(lower) !== -1;
+      d.classList.toggle("hidden", !match);
+      if (match) visible++;
+    });
+    let empty = this.drop.querySelector(".ss-empty");
+    if (!visible && q) {
+      if (!empty) { empty = document.createElement("div"); empty.className = "ss-empty"; this.drop.appendChild(empty); }
+      empty.textContent = 'No results for "' + q + '"';
+      empty.style.display = "";
+    } else if (empty) {
+      empty.style.display = "none";
+    }
+  }
+
+  _open() {
+    // Close others
+    document.querySelectorAll(".ss-display.open").forEach(function(d) {
+      if (d._ssInst && d._ssInst !== this) d._ssInst._close();
+    }, this);
+    this.disp.classList.add("open");
+    this.drop.classList.add("open");
+    this.disp._ssInst = this;
+    // Make input editable for search
+    this.input.readOnly = false;
+    this.input.classList.add("typing");
+    this._filter("");
+    this.input.select();
+    // Scroll selected into view
+    const selOpt = this.drop.querySelector(".ss-opt.selected");
+    if (selOpt) selOpt.scrollIntoView({ block: "nearest" });
+  }
+
+  _close() {
+    this.disp.classList.remove("open");
+    this.drop.classList.remove("open");
+    this.input.readOnly = true;
+    this.input.classList.remove("typing");
+    this._filter("");
+    this._sync();
+  }
+
+  _select(value) {
+    this.sel.value = value;
+    this.sel.dispatchEvent(new Event("change", { bubbles: true }));
+    this._sync();
+    this._close();
+  }
+
+  _attachEvents() {
+    const self = this;
+
+    // Click on display area toggles
+    this.disp.addEventListener("mousedown", function(e) {
+      if (self.disp.classList.contains("open")) return; // let input handle it
+      e.preventDefault();
+      self._open();
+    });
+
+    // Arrow click always toggles
+    this.disp.querySelector(".ss-arrow").addEventListener("mousedown", function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      self.disp.classList.contains("open") ? self._close() : self._open();
+    });
+
+    // Typing in input = filter
+    this.input.addEventListener("input", function() {
+      if (!self.disp.classList.contains("open")) self._open();
+      self._filter(self.input.value);
+    });
+
+    this.input.addEventListener("click", function() {
+      if (!self.disp.classList.contains("open")) self._open();
+    });
+
+    this.input.addEventListener("keydown", function(e) {
+      if (e.key === "Escape") { self._close(); self.input.blur(); }
+      if (e.key === "Enter") {
+        const first = self.drop.querySelector(".ss-opt:not(.hidden)");
+        if (first) self._select(first.dataset.value);
+      }
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        const first = self.drop.querySelector(".ss-opt:not(.hidden)");
+        if (first) first.focus();
+      }
+    });
+
+    // List clicks
+    this.drop.addEventListener("mousedown", function(e) {
+      e.preventDefault();
+      const opt = e.target.closest(".ss-opt");
+      if (opt) self._select(opt.dataset.value);
+    });
+
+    // Keyboard nav in list
+    this.drop.addEventListener("keydown", function(e) {
+      const items = Array.from(self.drop.querySelectorAll(".ss-opt:not(.hidden)"));
+      const idx = items.indexOf(document.activeElement);
+      if (e.key === "ArrowDown" && idx < items.length - 1) { e.preventDefault(); items[idx+1].focus(); }
+      if (e.key === "ArrowUp") { e.preventDefault(); if (idx > 0) items[idx-1].focus(); else self.input.focus(); }
+      if (e.key === "Enter" && idx >= 0) { e.preventDefault(); self._select(items[idx].dataset.value); }
+      if (e.key === "Escape") { self._close(); self.input.blur(); }
+    });
+
+    // Close on outside click
+    document.addEventListener("mousedown", function(e) {
+      if (!self.wrap.contains(e.target)) self._close();
+    }, { passive: true });
+  }
+}
+
+function initSearchableSelects(root) {
+  (root || document).querySelectorAll("select").forEach(function(sel) {
+    if (sel.closest(".filter-bar") || sel.closest(".filter-selects")) return;
+    if (!sel._ss) new SearchableSelect(sel);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  setTimeout(function() { initSearchableSelects(); }, 300);
+});
+
+
 async function hardRefresh() {
   await _idbClear();
   _cacheTime = 0;
@@ -3030,6 +3301,7 @@ function openEditForm(entryOrJson) {
   modal.classList.add("open");
   requestAnimationFrame(() => requestAnimationFrame(() => { modal.style.opacity = "1"; }));
   document.body.style.overflow = "hidden";
+  setTimeout(() => initSearchableSelects(modal), 80);
 }
 
 function closeEditModal() {
