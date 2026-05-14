@@ -1197,8 +1197,8 @@
 
         <div class="field">
           <label>Application Number <span class="req">*</span></label>
-          <input type="text" name="Application Number" placeholder="e.g. AU/UG/26/12149" required>
-          <div class="field-error">Application number is required</div>
+          <input type="text" id="appNumberInput" name="Application Number" placeholder="e.g. AU/UG/26/12149" required>
+          <div class="field-error" id="appNumberError">Application number is required</div>
         </div>
 
         <div class="field">
@@ -1333,10 +1333,11 @@
           </select>
         </div>
 
-        <div class="field">
-          <label>Referral Code</label>
-          <input type="text" name="Referral Code" placeholder="If applicable">
-          <div class="hint">Leave blank if none</div>
+        <div class="field" id="referralCodeField">
+          <label id="referralCodeLabel">Referral Code</label>
+          <input type="text" id="referralCodeInput" name="Referral Code" placeholder="If applicable">
+          <div class="field-error" id="referralCodeError">Referral code is required for Amity University</div>
+          <div class="hint" id="referralCodeHint">Leave blank if none</div>
         </div>
 
 
@@ -2258,6 +2259,87 @@ form.querySelectorAll("input, select, textarea").forEach(field => {
   });
 });
 
+// ── Amity-specific validation ────────────────────────────────────────────
+function isAmitySelected() {
+  const uniSel = form.querySelector('select[name="University Name"]');
+  const val = uniSel ? uniSel.value.toLowerCase() : "";
+  return val.includes("amity");
+}
+
+function updateAmityRules() {
+  const isAmity = isAmitySelected();
+  const appInput    = document.getElementById("appNumberInput");
+  const refInput    = document.getElementById("referralCodeInput");
+  const refLabel    = document.getElementById("referralCodeLabel");
+  const refHint     = document.getElementById("referralCodeHint");
+  const appError    = document.getElementById("appNumberError");
+  const refError    = document.getElementById("referralCodeError");
+
+  if (isAmity) {
+    // App number: 8 digits only
+    appInput.placeholder = "8-digit number (e.g. 12345678)";
+    appInput.setAttribute("data-amity", "1");
+    if (appError) appError.textContent = "Enter a valid 8-digit application number";
+
+    // Referral code: mandatory
+    refInput.setAttribute("required", "true");
+    refInput.setAttribute("data-amity-ref", "1");
+    if (refLabel) refLabel.innerHTML = 'Referral Code <span class="req">*</span>';
+    if (refHint) refHint.style.display = "none";
+    if (refError) refError.textContent = "Referral code is required for Amity University";
+  } else {
+    // Reset to normal
+    appInput.placeholder = "e.g. AU/UG/26/12149";
+    appInput.removeAttribute("data-amity");
+    appInput.classList.remove("invalid");
+    if (appError) { appError.textContent = "Application number is required"; appError.classList.remove("show"); }
+
+    refInput.removeAttribute("required");
+    refInput.removeAttribute("data-amity-ref");
+    refInput.classList.remove("invalid");
+    if (refLabel) refLabel.innerHTML = "Referral Code";
+    if (refHint) refHint.style.display = "";
+    if (refError) refError.classList.remove("show");
+  }
+}
+
+// Listen to university select change
+const uniSelectEl = form.querySelector('select[name="University Name"]');
+if (uniSelectEl) {
+  uniSelectEl.addEventListener("change", () => {
+    updateAmityRules();
+    // Re-validate app number if already filled
+    const appInput = document.getElementById("appNumberInput");
+    if (appInput && appInput.value) validateAmityAppNum(appInput);
+  });
+}
+
+function validateAmityAppNum(input) {
+  const appError = document.getElementById("appNumberError");
+  if (!input.getAttribute("data-amity")) return true; // not amity — use default validation
+  const val = input.value.trim();
+  const valid = /^\d{8}$/.test(val);
+  if (!valid) {
+    input.classList.add("invalid");
+    if (appError) { appError.textContent = "Must be exactly 8 digits for Amity University"; appError.classList.add("show"); }
+  } else {
+    input.classList.remove("invalid");
+    if (appError) appError.classList.remove("show");
+  }
+  return valid;
+}
+
+// Hook into app number input for live Amity validation
+const appNumEl = document.getElementById("appNumberInput");
+if (appNumEl) {
+  appNumEl.addEventListener("input", () => {
+    if (isAmitySelected()) validateAmityAppNum(appNumEl);
+  });
+  appNumEl.addEventListener("blur", () => {
+    if (isAmitySelected()) validateAmityAppNum(appNumEl);
+  });
+}
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -2269,6 +2351,23 @@ form.addEventListener("submit", async (e) => {
       if (!firstInvalid) firstInvalid = field;
     }
   });
+
+  // Extra Amity-specific checks
+  if (isAmitySelected()) {
+    const appInput = document.getElementById("appNumberInput");
+    if (!validateAmityAppNum(appInput)) {
+      allValid = false;
+      if (!firstInvalid) firstInvalid = appInput;
+    }
+    const refInput = document.getElementById("referralCodeInput");
+    if (!refInput.value.trim()) {
+      allValid = false;
+      refInput.classList.add("invalid");
+      const refError = document.getElementById("referralCodeError");
+      if (refError) refError.classList.add("show");
+      if (!firstInvalid) firstInvalid = refInput;
+    }
+  }
 
   if (!allValid) {
     if (firstInvalid) {
