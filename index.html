@@ -1449,6 +1449,16 @@
           <div class="field-error">Please select campus</div>
         </div>
 
+        <div class="field" id="presidencyRegionField" style="display:none;">
+          <label>Presidency Region <span class="req">*</span></label>
+          <select name="Presidency Region" id="presidencyRegionSelect">
+            <option value="">Select region</option>
+            <option>NA</option>
+            <option>Presidency_I</option>
+          </select>
+          <div class="field-error" id="presidencyRegionError">Presidency Region is required</div>
+        </div>
+
         <div class="field">
           <label>Stream <span class="req">*</span></label>
           <select name="Stream" required>
@@ -2260,6 +2270,33 @@ form.querySelectorAll("input, select, textarea").forEach(field => {
 });
 
 // ── Amity-specific validation ────────────────────────────────────────────
+function isPresidencySelected() {
+  const uniSel = form.querySelector('select[name="University Name"]');
+  const val = uniSel ? uniSel.value.toLowerCase() : "";
+  return val === "presidency";
+}
+
+function updatePresidencyRules() {
+  const isPresidency = isPresidencySelected();
+  const field  = document.getElementById("presidencyRegionField");
+  const select = document.getElementById("presidencyRegionSelect");
+  const error  = document.getElementById("presidencyRegionError");
+  if (!field || !select) return;
+
+  if (isPresidency) {
+    field.style.display = "";
+    select.setAttribute("required", "true");
+    select.setAttribute("data-presidency", "1");
+  } else {
+    field.style.display = "none";
+    select.removeAttribute("required");
+    select.removeAttribute("data-presidency");
+    select.value = "";
+    select.classList.remove("invalid");
+    if (error) error.classList.remove("show");
+  }
+}
+
 function isAmitySelected() {
   const uniSel = form.querySelector('select[name="University Name"]');
   const val = uniSel ? uniSel.value.toLowerCase() : "";
@@ -2308,6 +2345,7 @@ const uniSelectEl = form.querySelector('select[name="University Name"]');
 if (uniSelectEl) {
   uniSelectEl.addEventListener("change", () => {
     updateAmityRules();
+    updatePresidencyRules();
     // Re-validate app number if already filled
     const appInput = document.getElementById("appNumberInput");
     if (appInput && appInput.value) validateAmityAppNum(appInput);
@@ -2351,6 +2389,18 @@ form.addEventListener("submit", async (e) => {
       if (!firstInvalid) firstInvalid = field;
     }
   });
+
+  // Extra Presidency-specific check
+  if (isPresidencySelected()) {
+    const presSelect = document.getElementById("presidencyRegionSelect");
+    if (!presSelect.value) {
+      allValid = false;
+      presSelect.classList.add("invalid");
+      const presError = document.getElementById("presidencyRegionError");
+      if (presError) presError.classList.add("show");
+      if (!firstInvalid) firstInvalid = presSelect;
+    }
+  }
 
   // Extra Amity-specific checks
   if (isAmitySelected()) {
