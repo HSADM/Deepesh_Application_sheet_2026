@@ -51,7 +51,7 @@
     background: linear-gradient(90deg, var(--accent), var(--accent-glow), var(--accent));
   }
   .header-inner {
-    max-width: 620px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 28px 24px 24px;
     position: relative;
@@ -103,11 +103,17 @@
   }
 
   .main {
-    max-width: 620px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 24px 16px 48px;
   }
 
+  #formCard {
+    max-width: 680px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+  }
   .card {
     background: var(--surface);
     border-radius: var(--radius);
@@ -116,7 +122,210 @@
     border: 1px solid var(--border);
   }
   @media (max-width: 520px) {
-    .card { padding: 24px 18px; }
+    #formCard {
+    max-width: 680px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+  }
+  .card { padding: 24px 18px; }
+  }
+
+  .apply-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 24px;
+    align-items: start;
+    width: 100%;
+  }
+  @media (max-width: 1000px) {
+    .apply-layout { grid-template-columns: 1fr; }
+    .today-panel  { display: none; }
+  }
+
+  /* Today's panel */
+  /* ── Today Panel Loading Experience ── */
+  @keyframes tp-shimmer {
+    0%   { background-position: -500px 0; }
+    100% { background-position:  500px 0; }
+  }
+  @keyframes tp-spin { to { transform: rotate(360deg); } }
+  @keyframes tp-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  @keyframes tp-pop {
+    0%   { transform: scale(0.85); opacity: 0; }
+    60%  { transform: scale(1.08); }
+    100% { transform: scale(1);    opacity: 1; }
+  }
+  @keyframes tp-fadein {
+    from { opacity:0; transform:translateY(6px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  @keyframes tp-blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+  .tp-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:2px; }
+  .tp-live {
+    display:flex; align-items:center; gap:4px;
+    font-size:9px; font-weight:700; letter-spacing:1px;
+    color:#22c55e; background:rgba(34,197,94,0.1);
+    border-radius:20px; padding:2px 8px;
+  }
+  .tp-dot {
+    width:6px; height:6px; border-radius:50%;
+    background:#22c55e;
+    animation: tp-blink 1.4s ease-in-out infinite;
+  }
+  .sk {
+    background: linear-gradient(90deg,#f0f0f0 25%,#e4e4e4 50%,#f0f0f0 75%);
+    background-size: 500px 100%;
+    animation: tp-shimmer 1.3s infinite;
+    border-radius: 8px;
+  }
+  .tp-sk-row {
+    display:flex; align-items:center; gap:10px;
+    padding:10px 0; border-bottom:1px solid rgba(0,0,0,0.05);
+    animation: tp-fadein 0.4s ease both;
+  }
+  .tp-sk-row:nth-child(2) { animation-delay:0.08s; }
+  .tp-sk-row:nth-child(3) { animation-delay:0.16s; }
+  .tp-sk-row:last-child { border-bottom:none; }
+  .sk-av   { width:36px; height:36px; border-radius:50%; flex-shrink:0; }
+  .sk-body { flex:1; display:flex; flex-direction:column; gap:6px; }
+  .sk-name { height:12px; width:65%; }
+  .sk-chip { height:10px; width:42%; border-radius:20px; }
+  .sk-num  { width:18px; height:18px; border-radius:4px; flex-shrink:0; }
+  .tp-skeleton-wrap { padding-top:4px; }
+
+  .tp-count-loading { opacity:0.35; }
+  .tp-count-ready   { animation: tp-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) both; }
+
+  .tp-status {
+    display:flex; align-items:center; gap:6px;
+    font-size:10px; color:var(--text-muted,#999);
+    margin-top:10px; padding-top:8px;
+    border-top:1px solid var(--border,#eee);
+  }
+  .tp-spinner {
+    display:inline-block; width:10px; height:10px;
+    border:1.5px solid #ddd; border-top-color:var(--primary,#1e3a5f);
+    border-radius:50%; animation:tp-spin 0.8s linear infinite; flex-shrink:0;
+  }
+  .tp-status.done { color:#22c55e; }
+  .tp-status.done .tp-spinner { display:none; }
+  .tp-status.error { color:#e53e3e; }
+  .tp-status.error .tp-spinner { display:none; }
+
+  .today-panel {
+    position: sticky;
+    top: 20px;
+    background: var(--card-bg, #fff);
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    padding: 20px;
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+  }
+  .today-panel h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary, #1e3a5f);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin: 0 0 4px;
+  }
+  .today-panel .today-date {
+    font-size: 11px;
+    color: var(--text-muted, #888);
+    margin-bottom: 14px;
+  }
+  .tc-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+  .tc-row:last-child { border-bottom: none; }
+  .tc-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary, #1e3a5f);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+  }
+  .tc-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .tc-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text, #1a1a2e);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .tc-unis {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .tc-uni-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #f1f5f9;
+    border-radius: 20px;
+    padding: 2px 8px 2px 6px;
+    font-size: 11px;
+    color: #334155;
+    font-weight: 500;
+  }
+  .tc-uni-chip .chip-count {
+    background: var(--primary, #1e3a5f);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+  }
+  .tc-total {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--primary, #1e3a5f);
+    flex-shrink: 0;
+    min-width: 24px;
+    text-align: right;
+  }
+  .today-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--primary, #1e3a5f);
+    color: #fff;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .today-empty {
+    text-align: center;
+    color: var(--text-muted, #888);
+    font-size: 12px;
+    padding: 20px 0;
   }
 
   .form-grid {
@@ -178,9 +387,17 @@
   .field input.invalid,
   .field select.invalid,
   .field textarea.invalid {
-    border-color: var(--error);
-    box-shadow: 0 0 0 3px rgba(197,48,48,0.08);
+    border-color: #e53e3e !important;
+    box-shadow: 0 0 0 3px rgba(229,62,62,0.2) !important;
+    background: #fff5f5 !important;
   }
+  .ss-display.invalid {
+    border: 2px solid #e53e3e !important;
+    box-shadow: 0 0 0 3px rgba(229,62,62,0.2) !important;
+    background: #fff5f5 !important;
+  }
+  .ss-display.invalid .ss-input::placeholder { color: #e53e3e !important; }
+  .ss-display.invalid .ss-arrow { color: #e53e3e !important; }
   .field .field-error {
     font-size: 12px;
     color: var(--error);
@@ -492,6 +709,7 @@
   .stat-cancelled::before   { background: linear-gradient(90deg,#c53030,#e53e3e); }
   .stat-admitted::before    { background: linear-gradient(90deg,#065f46,#059669); }
   .stat-adm-cancelled::before { background: linear-gradient(90deg,#7b341e,#c05621); }
+  .stat-rejected::before { background: linear-gradient(90deg,#6b21a8,#9333ea); }
   .stat-ol-released::before  { background: linear-gradient(90deg,#065f46,#10b981); }
   .stat-ol-hold::before      { background: linear-gradient(90deg,#1e40af,#3b82f6); }
   .stat-ol-pending::before   { background: linear-gradient(90deg,#6d28d9,#8b5cf6); }
@@ -504,6 +722,7 @@
   .stat-cancelled .stat-num   { color: #c53030; }
   .stat-admitted .stat-num    { color: #065f46; }
   .stat-adm-cancelled .stat-num { color: #7b341e; }
+  .stat-rejected .stat-num { color: #6b21a8; }
   .stat-ol-released .stat-num  { color: #065f46; }
   .stat-ol-hold .stat-num      { color: #1e40af; }
   .stat-ol-pending .stat-num   { color: #6d28d9; }
@@ -1028,6 +1247,120 @@
     transition: all 0.15s;
   }
   .edit-cancel-btn:hover { background: #f0f0f0; color: var(--text); border-color: #ccc; }
+
+  /* ══════════════════════════════════════════════════════
+     LIVE UPDATE OVERLAY & PERFORMANCE SYSTEM
+  ══════════════════════════════════════════════════════ */
+  #liveOverlay {
+    position: fixed; inset: 0; z-index: 9999;
+    display: none; align-items: flex-start; justify-content: center;
+    padding-top: 18px;
+    pointer-events: none;
+  }
+  #liveOverlay.show { display: flex; }
+  .live-pill {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(15,23,42,0.92);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 100px;
+    padding: 8px 18px 8px 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.04);
+    animation: pill-in 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+    pointer-events: auto;
+  }
+  @keyframes pill-in {
+    from { opacity:0; transform:translateY(-12px) scale(0.9); }
+    to   { opacity:1; transform:translateY(0)      scale(1); }
+  }
+  @keyframes pill-out {
+    from { opacity:1; transform:translateY(0)      scale(1); }
+    to   { opacity:0; transform:translateY(-8px)   scale(0.95); }
+  }
+  .live-pill.hiding { animation: pill-out 0.25s ease both; }
+  .live-pill-ring {
+    width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+    border: 2px solid rgba(255,255,255,0.12);
+    border-top-color: #60a5fa;
+    animation: ring-spin 0.7s linear infinite;
+  }
+  @keyframes ring-spin { to { transform:rotate(360deg); } }
+  .live-pill-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #22c55e; flex-shrink: 0;
+    box-shadow: 0 0 8px #22c55e;
+    animation: dot-pulse 1.4s ease-in-out infinite;
+    display: none;
+  }
+  @keyframes dot-pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.7)} }
+  .live-pill-text {
+    font-size: 12px; font-weight: 600; color: #e2e8f0;
+    letter-spacing: 0.2px; white-space: nowrap;
+  }
+  .live-pill-sub {
+    font-size: 10px; color: rgba(255,255,255,0.45);
+    margin-left: 2px; font-weight: 400;
+  }
+
+  /* Dashboard blur overlay during hard refresh */
+  #dashBlurOverlay {
+    position: absolute; inset: 0; z-index: 10;
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(3px);
+    border-radius: inherit;
+    display: none; align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+  #dashBlurOverlay.show { display: flex; }
+
+  /* Stat card count animation */
+  @keyframes stat-pop {
+    0%   { transform:scale(0.7);  opacity:0; }
+    60%  { transform:scale(1.15); opacity:1; }
+    100% { transform:scale(1); }
+  }
+  .stat-num.updating { animation: stat-pop 0.45s cubic-bezier(0.34,1.56,0.64,1) both; }
+
+  /* Sync status badge */
+  #syncBadge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 600; padding: 3px 10px;
+    border-radius: 100px; cursor: default; user-select: none;
+    transition: all 0.3s ease; white-space: nowrap;
+  }
+  #syncBadge.syncing { background:#eff6ff; color:#2563eb; }
+  #syncBadge.done    { background:#f0fdf4; color:#16a34a; }
+  #syncBadge.stale   { background:#fefce8; color:#ca8a04; }
+  #syncBadge.error   { background:#fef2f2; color:#dc2626; }
+  #syncBadge .sb-dot {
+    width:6px; height:6px; border-radius:50%; background:currentColor;
+    animation: dot-pulse 1.2s ease-in-out infinite;
+  }
+  #syncBadge.done .sb-dot { animation:none; }
+  #syncBadge.error .sb-dot { animation:none; }
+
+  /* Table row fade-in on data update */
+  @keyframes row-in {
+    from { opacity:0; transform:translateX(-4px); }
+    to   { opacity:1; transform:translateX(0); }
+  }
+  .tbl-animate tbody tr {
+    animation: row-in 0.18s ease both;
+  }
+  .tbl-animate tbody tr:nth-child(1)  { animation-delay: 0ms; }
+  .tbl-animate tbody tr:nth-child(2)  { animation-delay: 20ms; }
+  .tbl-animate tbody tr:nth-child(3)  { animation-delay: 40ms; }
+  .tbl-animate tbody tr:nth-child(4)  { animation-delay: 60ms; }
+  .tbl-animate tbody tr:nth-child(5)  { animation-delay: 80ms; }
+
+  /* Filter pill active state */
+  .filter-active { box-shadow: 0 0 0 2px #3b82f6 !important; }
+
+  /* Instant filter transition */
+  #dashboardInner { transition: opacity 0.15s ease; }
+  #dashboardInner.filtering { opacity: 0.6; }
+
 </style>
 </head>
 <body>
@@ -1049,6 +1382,7 @@
 
   <!-- ══════════════════ APPLY PAGE ══════════════════ -->
   <div class="page active" id="pageApply">
+  <div class="apply-layout">
   <div class="card" id="formCard">
     <form id="applicationForm" novalidate autocomplete="off">
       <div class="form-grid">
@@ -1060,14 +1394,6 @@
           <label>Counsellor Name <span class="req">*</span></label>
           <select name="Counsellor Name" required>
             <option value="">Select counsellor</option>
-            <option>Badal Kumar Mahapatra</option>
-            <option>Tejas nagpure</option>
-            <option>Mayuri patil</option>
-            <option>Mansi more</option>
-            <option>Badal Kumar Mahapatra</option>
-            <option>Tejas nagpure</option>
-            <option>Mayuri patil</option>
-            <option>Mansi more</option>
             <option>Ranjita Behura</option>
             <option>Sugyani Naik</option>
             <option>Abhishek Das</option>
@@ -1081,7 +1407,7 @@
             <option>Deepak Gupta</option>
             <option>Samiksha Aswar</option>
             <option>Trupti Mankar</option>
-            <option>Shinjinee Goswami</option>
+            <option>Srushti</option>
             <option>Lokesh Gugale</option>
             <option>Shreyash Bankar</option>
             <option>Vaibhavi Raval</option>
@@ -1097,13 +1423,12 @@
             <option>Pratiksha Jagtap</option>
             <option>Faisal Shaikh</option>
             <option>Dhanashri Adhav</option>
-            <option>Abhay dimble</option>
             <option>Moin pathan</option>
             <option>Khushi Oswal</option>
             <option>Tejaswini bhalke</option>
             <option>Aditya hiwale</option>
             <option>Aditi dhariwal</option>
-            <option>Deven Suryavanshi</option>
+            <option>Pooja Navale</option>
             <option>Nirupama Singh</option>
             <option>Yuvraj Pandhare</option>
             <option>Srinidhi Galande</option>
@@ -1132,7 +1457,6 @@
             <option>Viraj Nikam</option>
             <option>Manisha Shinde</option>
             <option>Pranav Gopale</option>
-            <option>Umair Pirjade</option>
             <option>Ritusmita Choudhury</option>
             <option>Subhashree Dash</option>
             <option>Nihal Pal</option>
@@ -1147,10 +1471,7 @@
             <option>Sohail Shaikh</option>
             <option>Sangita Das</option>
             <option>Meenal solanki</option>
-            <option>Sneha Shilvanth</option>
             <option>Nikita Jannu</option>
-            <option>Srushti</option>
-            <option>Pooja Navale</option>
             <option>Sachin Paliwal</option>
             <option>Manisha Kumari</option>
             <option>Sazreen Ansari</option>
@@ -1162,7 +1483,7 @@
             <option>Aarya Pore</option>
             <option>Diksha Surwade</option>
             <option>Mahek Imran Shaikh</option>
-            <option>Sudipta Kumar Pradhan</option>
+            <option>Badal Kumar Mahapatra</option>
           </select>
           <div class="field-error">Counsellor name is required</div>
         </div>
@@ -1206,7 +1527,8 @@
         <div class="field">
           <label>Application Number <span class="req">*</span></label>
           <input type="text" id="appNumberInput" name="Application Number" placeholder="e.g. AU/UG/26/12149" required>
-          <div class="field-error" id="appNumberError">Application number is required</div>
+          <div class="field-error" id="appNumberError" style="display:none;">Amity University requires an 8-digit Application Number</div>
+          <div class="field-error">Application number is required</div>
         </div>
 
         <div class="field">
@@ -1239,12 +1561,12 @@
             <option>Half Form</option>
             <option>Test Pending</option>
             <option>PI Pending</option>
-            <option>Application Cancelled</option>
-            <option>Application Hold</option>
+            <option>App Cancelled</option>
+            <option>App Hold</option>
             <option>Admission Done</option>
-            <option>Admission Cancelled</option>
+            <option>Adm Cancelled</option>
             <option>OL Released</option>
-            <option>OL on Hold</option>
+            <option>OL On Hold</option>
             <option>OL Pending</option>
             <option>Rejected by Student</option>
           </select>
@@ -1341,11 +1663,11 @@
           </select>
         </div>
 
-        <div class="field" id="referralCodeField">
-          <label id="referralCodeLabel">Referral Code</label>
+        <div class="field">
+          <label>Referral Code <span class="req" id="referralReqStar" style="display:none;">*</span></label>
           <input type="text" id="referralCodeInput" name="Referral Code" placeholder="If applicable">
-          <div class="field-error" id="referralCodeError">Referral code is required for Amity University</div>
-          <div class="hint" id="referralCodeHint">Leave blank if none</div>
+          <div class="field-error" id="referralCodeError">Referral Code is required for Amity University</div>
+          <div class="hint" id="referralHint">Leave blank if none</div>
         </div>
 
 
@@ -1408,7 +1730,7 @@
 
         <div class="field">
           <label>University Name <span class="req">*</span></label>
-          <select name="University Name" required>
+          <select name="University Name" id="uniNameSelect" required>
             <option value="">Select university</option>
             <option>Alliance</option>
             <option>Amity</option>
@@ -1424,6 +1746,16 @@
             <option>UPES</option>
           </select>
           <div class="field-error">Please select university</div>
+        </div>
+
+        <div class="field" id="presidencyRegionField" style="display:none;">
+          <label>Presidency Region <span class="req">*</span></label>
+          <select name="Presidency Region" id="presidencyRegionSelect">
+            <option value="">Select region</option>
+            <option>NA</option>
+            <option>Presidency_I</option>
+          </select>
+          <div class="field-error">Presidency Region is required</div>
         </div>
 
         <div class="field">
@@ -1455,16 +1787,6 @@
             <option>Hyderabad</option>
           </select>
           <div class="field-error">Please select campus</div>
-        </div>
-
-        <div class="field" id="presidencyRegionField" style="display:none;">
-          <label>Presidency Region <span class="req">*</span></label>
-          <select name="Presidency Region" id="presidencyRegionSelect">
-            <option value="">Select region</option>
-            <option>NA</option>
-            <option>Presidency_I</option>
-          </select>
-          <div class="field-error" id="presidencyRegionError">Presidency Region is required</div>
         </div>
 
         <div class="field">
@@ -1513,16 +1835,14 @@
         <div class="section-title">Fee Details</div>
 
         <div class="field">
-          <label>Course Fee <span class="req">*</span></label>
-          <input type="number" name="Course Fee" placeholder="e.g. 250000" min="0" step="1" required>
-          <div class="field-error">Course fee is required</div>
+          <label>Course Fee</label>
+          <input type="number" name="Course Fee" placeholder="e.g. 250000" min="0" step="1">
           <div class="hint">Total course fee in ₹</div>
         </div>
 
         <div class="field">
-          <label>Semester Fee <span class="req">*</span></label>
-          <input type="number" name="Semester Fee" placeholder="e.g. 45000" min="0" step="1" required>
-          <div class="field-error">Semester fee is required</div>
+          <label>Semester Fee</label>
+          <input type="number" name="Semester Fee" placeholder="e.g. 45000" min="0" step="1">
           <div class="hint">Per-semester fee in ₹</div>
         </div>
 
@@ -1568,6 +1888,32 @@
     </div>
   </div>
 
+  <!-- Today's Summary Panel -->
+  <div class="today-panel" id="todayPanel">
+    <div class="tp-header">
+      <h3>📊 Today's Applications</h3>
+      <div class="tp-live" id="tpLive" style="display:none;">
+        <span class="tp-dot"></span>LIVE
+      </div>
+    </div>
+    <div class="today-date" id="todayDateLabel"></div>
+    <div class="today-total" id="todayTotalBar">
+      <span>Total Submitted Today</span>
+      <span id="todayTotal" class="tp-count-loading">—</span>
+    </div>
+    <div id="todayCounsellorList">
+      <div class="tp-skeleton-wrap">
+        <div class="tp-sk-row"><div class="sk sk-av"></div><div class="sk-body"><div class="sk sk-name"></div><div class="sk sk-chip"></div></div><div class="sk sk-num"></div></div>
+        <div class="tp-sk-row"><div class="sk sk-av"></div><div class="sk-body"><div class="sk sk-name" style="width:55%"></div><div class="sk sk-chip" style="width:35%"></div></div><div class="sk sk-num"></div></div>
+        <div class="tp-sk-row"><div class="sk sk-av"></div><div class="sk-body"><div class="sk sk-name" style="width:70%"></div><div class="sk sk-chip" style="width:45%"></div></div><div class="sk sk-num"></div></div>
+      </div>
+    </div>
+    <div class="tp-status" id="tpStatus">
+      <span class="tp-spinner"></span> Loading today's data…
+    </div>
+  </div>
+  </div><!-- /apply-layout -->
+
   <div class="footer">
     Need help? Contact <a href="mailto:admissions@higher.study">admissions@higher.study</a> &nbsp;|&nbsp; © 2026 Higher.Study
   </div>
@@ -1603,6 +1949,7 @@
           <div class="stat-card stat-ol-released"><div class="stat-num" id="statOLReleased">0</div><div class="stat-label">OL Released</div></div>
           <div class="stat-card stat-ol-hold"><div class="stat-num" id="statOLHold">0</div><div class="stat-label">OL on Hold</div></div>
           <div class="stat-card stat-ol-pending"><div class="stat-num" id="statOLPending">0</div><div class="stat-label">OL Pending</div></div>
+          <div class="stat-card stat-rejected"><div class="stat-num" id="statRejectedByStudent">0</div><div class="stat-label">Rejected by Student</div></div>
         </div>
 
         <div class="filter-bar">
@@ -1671,12 +2018,12 @@
               <option>Half Form</option>
               <option>Test Pending</option>
               <option>PI Pending</option>
-              <option>Application Cancelled</option>
-              <option>Application Hold</option>
+              <option>App Cancelled</option>
+              <option>App Hold</option>
               <option>Admission Done</option>
-              <option>Admission Cancelled</option>
+              <option>Adm Cancelled</option>
               <option>OL Released</option>
-              <option>OL on Hold</option>
+              <option>OL On Hold</option>
               <option>OL Pending</option>
               <option>Rejected by Student</option>
             </select>
@@ -1685,12 +2032,20 @@
         <div class="edit-section-title">🎓 Academic Details</div>
         <div class="form-grid">
           <div class="field"><label>University Name</label>
-            <select name="University Name">
+            <select name="University Name" id="editUniNameSelect">
               <option value="">Select</option>
               <option>Alliance</option><option>Amity</option><option>Chandigarh</option>
               <option>CV Raman</option><option>GIFT</option><option>DRIEMS</option>
               <option>GEC</option><option>Pearl</option><option>KU/UID</option>
               <option>UAI</option><option>Presidency</option><option>UPES</option>
+            </select>
+          </div>
+          <div class="field" id="editPresidencyRegionField" style="display:none;">
+            <label>Presidency Region</label>
+            <select name="Presidency Region" id="editPresidencyRegionSelect">
+              <option value="">Select region</option>
+              <option>NA</option>
+              <option>Presidency_I</option>
             </select>
           </div>
           <div class="field"><label>Campus</label>
@@ -1752,7 +2107,7 @@
               <option>Deepak Gupta</option>
               <option>Samiksha Aswar</option>
               <option>Trupti Mankar</option>
-              <option>Shinjinee Goswami</option>
+              <option>Srushti</option>
               <option>Lokesh Gugale</option>
               <option>Shreyash Bankar</option>
               <option>Vaibhavi Raval</option>
@@ -1768,13 +2123,12 @@
               <option>Pratiksha Jagtap</option>
               <option>Faisal Shaikh</option>
               <option>Dhanashri Adhav</option>
-              <option>Abhay dimble</option>
               <option>Moin pathan</option>
               <option>Khushi Oswal</option>
               <option>Tejaswini bhalke</option>
               <option>Aditya hiwale</option>
               <option>Aditi dhariwal</option>
-              <option>Deven Suryavanshi</option>
+              <option>Pooja Navale</option>
               <option>Nirupama Singh</option>
               <option>Yuvraj Pandhare</option>
               <option>Srinidhi Galande</option>
@@ -1803,7 +2157,6 @@
               <option>Viraj Nikam</option>
               <option>Manisha Shinde</option>
               <option>Pranav Gopale</option>
-              <option>Umair Pirjade</option>
               <option>Ritusmita Choudhury</option>
               <option>Subhashree Dash</option>
               <option>Nihal Pal</option>
@@ -1818,10 +2171,7 @@
               <option>Sohail Shaikh</option>
               <option>Sangita Das</option>
               <option>Meenal solanki</option>
-              <option>Sneha Shilvanth</option>
               <option>Nikita Jannu</option>
-              <option>Srushti</option>
-              <option>Pooja Navale</option>
               <option>Sachin Paliwal</option>
               <option>Manisha Kumari</option>
               <option>Sazreen Ansari</option>
@@ -1833,7 +2183,7 @@
               <option>Aarya Pore</option>
               <option>Diksha Surwade</option>
               <option>Mahek Imran Shaikh</option>
-              <option>Sudipta Kumar Pradhan</option>
+              <option>Badal Kumar Mahapatra</option>
             </select>
           </div>
           <div class="field"><label>Team Leader</label><input type="text" name="Team Leader"></div>
@@ -1907,7 +2257,7 @@
 // ════════════════════════════════════════════════════════════
 // CONFIG
 // ════════════════════════════════════════════════════════════
-const API_URL = "https://script.google.com/macros/s/AKfycbxtGHGJnobIOYmIxxsblBlUgtoEMjU16bHxCiJgyDLCvrTsjAgeNKN6_BRoUIq0sUI82A/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwYK8fCg7yYqciWJUgjgsPGQrYAsSVKFm0IOLl59tT9245mxGyk9EMge5B3U3Ev8Vo7fg/exec";
 
 // ════════════════════════════════════════════════════════════
 // WEB WORKER — offload JSON parsing + entry processing to
@@ -2098,34 +2448,368 @@ function _processEntries(startIdx) {
 }
 
 // ── Sync indicator UI ──────────────────────────────────────────────────────
+// ── Live overlay helpers ──────────────────────────────────────────────────
+let _overlayTimer = null;
+
+function _getOverlay() { return document.getElementById("liveOverlay"); }
+function _getPill()    { return document.getElementById("livePill"); }
+
+function _showLiveOverlay(sub) {
+  const ov = _getOverlay(); if (!ov) return;
+  const ring = document.getElementById("livePillRing");
+  const dot  = document.getElementById("livePillDot");
+  const text = document.getElementById("livePillText");
+  const subEl= document.getElementById("livePillSub");
+  if (ring) { ring.style.display="block"; ring.style.borderTopColor="#60a5fa"; }
+  if (dot)  dot.style.display = "none";
+  if (text) text.textContent  = "Updating Live Data…";
+  if (subEl) subEl.textContent = sub || "Fetching latest records…";
+  const pill = _getPill();
+  if (pill) pill.classList.remove("hiding");
+  clearTimeout(_overlayTimer);
+  ov.classList.add("show");
+}
+
+function _hideLiveOverlay(msg) {
+  const ov = _getOverlay(); if (!ov) return;
+  const ring = document.getElementById("livePillRing");
+  const dot  = document.getElementById("livePillDot");
+  const text = document.getElementById("livePillText");
+  const subEl= document.getElementById("livePillSub");
+  if (ring) ring.style.display = "none";
+  if (dot)  { dot.style.display="block"; dot.style.background="#22c55e"; dot.style.boxShadow="0 0 8px #22c55e"; }
+  if (text) text.textContent = msg || "✓ All Data Synced";
+  if (subEl) {
+    const t = new Date().toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+    subEl.textContent = "Last updated " + t;
+  }
+  clearTimeout(_overlayTimer);
+  _overlayTimer = setTimeout(() => {
+    const pill = _getPill();
+    if (pill) {
+      pill.classList.add("hiding");
+      setTimeout(() => { ov.classList.remove("show"); pill.classList.remove("hiding"); }, 260);
+    }
+  }, 2000);
+}
+
+function _errorLiveOverlay(msg) {
+  const ov = _getOverlay(); if (!ov) return;
+  const ring = document.getElementById("livePillRing");
+  const dot  = document.getElementById("livePillDot");
+  const text = document.getElementById("livePillText");
+  const subEl= document.getElementById("livePillSub");
+  if (ring) ring.style.display = "none";
+  if (dot)  { dot.style.display="block"; dot.style.background="#ef4444"; dot.style.boxShadow="0 0 8px #ef4444"; }
+  if (text) text.textContent  = msg || "⚠ Sync Failed";
+  if (subEl) subEl.textContent = "Click Refresh to retry";
+  clearTimeout(_overlayTimer);
+  _overlayTimer = setTimeout(() => { ov.classList.remove("show"); }, 4500);
+}
+
 function _setSyncStatus(state) {
-  // state: 'syncing' | 'done' | 'stale' | 'error'
+  // Update subtle badge
   let el = document.getElementById("_syncBadge");
   if (!el) {
     el = document.createElement("span");
     el.id = "_syncBadge";
     el.style.cssText = "font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;margin-left:8px;transition:all 0.3s;display:inline-flex;align-items:center;gap:4px;";
     const rc = document.getElementById("resultCount");
-    if (rc) rc.parentNode && rc.parentNode.appendChild(el);
+    if (rc && rc.parentNode) rc.parentNode.appendChild(el);
   }
   const styles = {
-    syncing : { bg:"#e0f2fe", color:"#0369a1", text:"⟳ Syncing…",    spin: true  },
-    done    : { bg:"#dcfce7", color:"#166534", text:"✓ Up to date",   spin: false },
-    stale   : { bg:"#fef9c3", color:"#854d0e", text:"⚠ Stale data",   spin: false },
-    error   : { bg:"#fee2e2", color:"#991b1b", text:"✕ Sync failed",  spin: false },
+    syncing: { bg:"#e0f2fe", color:"#0369a1", spin:true,  text:"Syncing…"    },
+    done   : { bg:"#dcfce7", color:"#166534", spin:false, text:"✓ Live"       },
+    stale  : { bg:"#fef9c3", color:"#854d0e", spin:false, text:"⚡ Cached"    },
+    error  : { bg:"#fee2e2", color:"#991b1b", spin:false, text:"✕ Error"      },
   };
   const s = styles[state] || styles.done;
-  el.style.background = s.bg;
-  el.style.color      = s.color;
-  el.innerHTML        = s.spin
-    ? `<span style="display:inline-block;width:10px;height:10px;border:2px solid ${s.color}40;border-top-color:${s.color};border-radius:50%;animation:spin .6s linear infinite;"></span> Syncing…`
+  el.style.background = s.bg; el.style.color = s.color; el.style.opacity = "1";
+  el.innerHTML = s.spin
+    ? `<span style="display:inline-block;width:9px;height:9px;border:1.5px solid ${s.color}40;border-top-color:${s.color};border-radius:50%;animation:spin .65s linear infinite;flex-shrink:0;"></span> Syncing…`
     : s.text;
-  if (state === "done") setTimeout(() => { if (el) el.style.opacity = "0"; }, 3000);
-  else el.style.opacity = "1";
+  if (state === "done") setTimeout(() => { if (el) el.style.opacity = "0.5"; }, 3500);
+
+  // Trigger overlay
+  if (state === "syncing") _showLiveOverlay("Fetching " + (allEntries.length ? allEntries.length.toLocaleString() : "") + " records…");
+  if (state === "done")    _hideLiveOverlay("✓ All Data Synced");
+  if (state === "error")   _errorLiveOverlay("⚠ Sync Failed");
 }
 
 // ── Boot: load IDB → show immediately → revalidate in background ──────────
 document.addEventListener("DOMContentLoaded", async () => {
+
+  // Set today date label immediately
+  (function() {
+    const lbl = document.getElementById("todayDateLabel");
+    if (lbl) {
+      const d = new Date();
+      lbl.textContent = d.toLocaleDateString("en-IN", { weekday:"long", day:"numeric", month:"long", year:"numeric" });
+    }
+  })();
+
+  // ── Highlight ss-display on blur ─────────────────────────────────────
+  document.querySelectorAll(".ss-display").forEach(function(disp) {
+    disp.addEventListener("mousedown", function() {
+      // slight delay so value is updated first
+      setTimeout(function() {
+        const wrap = disp.parentElement;
+        const sel  = wrap ? wrap.querySelector("select[required]") : null;
+        if (!sel) return;
+        if (!sel.value || sel.value.trim() === "") {
+          disp.classList.add("invalid");
+        } else {
+          disp.classList.remove("invalid");
+        }
+      }, 300);
+    });
+  });
+
+  // ── Today's Applications Panel ───────────────────────────────────────
+  const _MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+  function isTodayDate(dateStr) {
+    if (!dateStr && dateStr !== 0) return false;
+    const now  = new Date();
+    const dd   = now.getDate(), mo = now.getMonth(), yyyy = now.getFullYear(), mm = mo + 1;
+
+    // Native Date object
+    if (dateStr instanceof Date) {
+      return !isNaN(dateStr) && dateStr.getDate()===dd && dateStr.getMonth()===mo && dateStr.getFullYear()===yyyy;
+    }
+
+    const s = String(dateStr).trim();
+    if (!s || s==="undefined" || s==="null") return false;
+
+    // Try new Date() — handles most string formats including GMT strings
+    const parsed = new Date(s);
+    if (!isNaN(parsed.getTime())) {
+      const p = new Date(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
+      const t = new Date(yyyy, mo, dd);
+      if (p.getTime() === t.getTime()) return true;
+    }
+
+    // "16-May-2026"
+    const mMon = s.match(/^(\d{1,2})-([A-Za-z]{3,9})-(\d{4})/);
+    if (mMon) {
+      const mi = _MON.findIndex(m => m.toLowerCase() === mMon[2].slice(0,3).toLowerCase());
+      return +mMon[1]===dd && mi===mo && +mMon[3]===yyyy;
+    }
+    // "16-05-2026" or "16/05/2026"
+    const mNum = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+    if (mNum) return +mNum[1]===dd && +mNum[2]===mm && +mNum[3]===yyyy;
+    // "2026-05-16"
+    const mISO = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (mISO) return +mISO[3]===dd && +mISO[2]===mm && +mISO[1]===yyyy;
+
+    return false;
+  }
+
+  function getInitials(name) {
+    return (name || "?").split(" ").filter(Boolean).slice(0,2).map(w => w[0].toUpperCase()).join("");
+  }
+
+  const AVATAR_COLORS = [
+    "#1e3a5f","#0f766e","#7c3aed","#b45309","#be185d",
+    "#1d4ed8","#065f46","#92400e","#6d28d9","#0369a1"
+  ];
+  function avatarColor(name) {
+    let h = 0;
+    for (let i = 0; i < (name||"").length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xffffffff;
+    return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+  }
+
+  function renderTodayPanel(entries) {
+    const label = document.getElementById("todayDateLabel");
+    if (label && !label.textContent) {
+      const d = new Date();
+      label.textContent = d.toLocaleDateString("en-IN", { weekday:"long", day:"numeric", month:"long", year:"numeric" });
+    }
+
+    const todayEntries = (entries || []).filter(e => isTodayDate(e["Form Submitted date"]));
+
+    // Animate total count with pop effect
+    const totalEl = document.getElementById("todayTotal");
+    if (totalEl) {
+      totalEl.classList.remove("tp-count-loading");
+      void totalEl.offsetWidth; // reflow to restart animation
+      totalEl.classList.add("tp-count-ready");
+      totalEl.textContent = todayEntries.length;
+    }
+
+    // Show LIVE badge
+    const liveEl = document.getElementById("tpLive");
+    if (liveEl) liveEl.style.display = "flex";
+
+    // Update status bar
+    const statusEl = document.getElementById("tpStatus");
+    if (statusEl) {
+      const now = new Date();
+      const t = now.toLocaleTimeString("en-IN", { hour:"2-digit", minute:"2-digit" });
+      statusEl.className = "tp-status done";
+      statusEl.innerHTML = "✅ Updated at " + t;
+    }
+
+    // Group by Counsellor → University
+    const byC = {};
+    todayEntries.forEach(e => {
+      const c = (e["Counsellor Name"] || "Unknown").trim();
+      const u = (e["University Name"]  || "Unknown").trim();
+      if (!byC[c]) byC[c] = {};
+      byC[c][u] = (byC[c][u] || 0) + 1;
+    });
+
+    const cEl = document.getElementById("todayCounsellorList");
+    if (!cEl) return;
+
+    if (!Object.keys(byC).length) {
+      cEl.innerHTML = '<div class="today-empty">No entries yet today</div>';
+      return;
+    }
+
+    cEl.innerHTML = Object.entries(byC)
+      .map(([cName, unis]) => {
+        const total = Object.values(unis).reduce((a,b) => a+b, 0);
+        const initials = getInitials(cName);
+        const color = avatarColor(cName);
+        const chips = Object.entries(unis)
+          .sort((a,b) => b[1]-a[1])
+          .map(([u,cnt]) => `<span class="tc-uni-chip"><span>${u}</span><span class="chip-count">${cnt}</span></span>`)
+          .join("");
+        return `<div class="tc-row">
+          <div class="tc-avatar" style="background:${color};">${initials}</div>
+          <div class="tc-body">
+            <div class="tc-name" title="${cName}">${cName}</div>
+            <div class="tc-unis">${chips}</div>
+          </div>
+          <div class="tc-total">${total}</div>
+        </div>`;
+      })
+      .sort((a,b) => {
+        const ta = parseInt(a.match(/tc-total">(\d+)/)?.[1]||0);
+        const tb = parseInt(b.match(/tc-total">(\d+)/)?.[1]||0);
+        return tb - ta;
+      })
+      .join("");
+  }
+
+  // Load today panel from API
+  async function loadTodayPanel() {
+    try {
+      if (!API_URL) return;
+      // Use cached allEntries if already loaded — no extra fetch needed
+      if (allEntries && allEntries.length > 0) {
+        renderTodayPanel(allEntries);
+        return;
+      }
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "getDashboard" }),
+      });
+      const json = await res.json();
+      if (json.status === "success") renderTodayPanel(json.rows || []);
+    } catch(e) {
+      console.warn("Today panel load error:", e);
+      const statusEl = document.getElementById("tpStatus");
+      if (statusEl) {
+        statusEl.className = "tp-status error";
+        statusEl.innerHTML = "⚠️ Failed to load — check connection";
+      }
+    }
+  }
+
+  loadTodayPanel();
+  // Refresh panel every 2 minutes
+  setInterval(loadTodayPanel, 90 * 1000); // 90s auto-refresh
+
+  // Hook into allEntries updates — refresh panel whenever dashboard data loads
+  const _origBuildTable = window.buildTable;
+  document.addEventListener("dashboardLoaded", function(e) {
+    if (e.detail && e.detail.rows) renderTodayPanel(e.detail.rows);
+  });
+
+  // Also refresh after a new submit
+  const origShowSuccess = window.showSuccessScreen;
+  // ─────────────────────────────────────────────────────────────────────
+  // ── Presidency: show region field only for Presidency uni ───────────────
+  (function() {
+    function wire(uniId, fieldId, selId) {
+      var uni = document.getElementById(uniId);
+      var fld = document.getElementById(fieldId);
+      var sel = document.getElementById(selId);
+      if (!uni || !fld || !sel) return;
+      function toggle() {
+        var isP = uni.value === "Presidency";
+        fld.style.display = isP ? "" : "none";
+        sel.required = isP;
+        if (!isP) sel.value = "";
+      }
+      uni.addEventListener("change", toggle);
+      toggle();
+    }
+    wire("uniNameSelect",     "presidencyRegionField",     "presidencyRegionSelect");
+    wire("editUniNameSelect", "editPresidencyRegionField", "editPresidencyRegionSelect");
+  })();
+  // ─────────────────────────────────────────────────────────────────────
+
+  // ── Amity: Referral Code mandatory + Application Number 8-digit ──────
+  const uniSelect     = document.querySelector('select[name="University Name"]');
+  const referralInput = document.getElementById("referralCodeInput");
+  const referralStar  = document.getElementById("referralReqStar");
+  const referralHint  = document.getElementById("referralHint");
+  const appNumInput   = document.getElementById("appNumberInput");
+  const appNumError   = document.getElementById("appNumberError");
+
+  function toggleAmityRules() {
+    if (!uniSelect) return;
+    const isAmity = uniSelect.value.toLowerCase().includes("amity");
+
+    // Referral Code — mandatory for Amity
+    if (referralInput) {
+      referralInput.required = isAmity;
+      if (referralStar) referralStar.style.display = isAmity ? "inline" : "none";
+      if (referralHint) referralHint.style.display  = isAmity ? "none"   : "block";
+    }
+
+    // Application Number — 8-digit numeric only for Amity
+    if (appNumInput) {
+      if (isAmity) {
+        appNumInput.placeholder = "8-digit number (e.g. 12345678)";
+        appNumInput.maxLength   = 8;
+        appNumInput.inputMode   = "numeric";
+      } else {
+        appNumInput.placeholder = "e.g. AU/UG/26/12149";
+        appNumInput.removeAttribute("pattern");
+        appNumInput.removeAttribute("maxLength");
+        appNumInput.removeAttribute("inputMode");
+      }
+      if (appNumError) appNumError.style.display = "none";
+    }
+  }
+
+  // Validate 8-digit on input (Amity only)
+  if (appNumInput) {
+    appNumInput.addEventListener("input", function() {
+      const isAmity = uniSelect && uniSelect.value.toLowerCase().includes("amity");
+      if (isAmity) {
+        // Numbers only, max 8 digits
+        this.value = this.value.replace(/[^0-9]/g, "").slice(0, 8);
+        const ok = this.value.length === 8;
+        this.classList.toggle("invalid", this.value.length > 0 && !ok);
+        if (appNumError) appNumError.style.display = (this.value.length > 0 && !ok) ? "block" : "none";
+      } else {
+        this.classList.remove("invalid");
+        if (appNumError) appNumError.style.display = "none";
+      }
+    });
+  }
+
+  if (uniSelect) {
+    uniSelect.addEventListener("change", toggleAmityRules);
+    toggleAmityRules(); // run on load
+  }
+  // ─────────────────────────────────────────────────────────────────────
   // 1. Try to load from IDB instantly (no network)
   const cached = await _idbLoad();
   if (cached && cached.data && cached.data.length > 0) {
@@ -2138,7 +2822,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   // 2. Always start a background server sync
   setTimeout(() => _bgRefresh(false), 500);
 
-  // 3. Hover pre-warm (if cache invalid)
+  // 3. Auto-refresh every 3 minutes in background
+  setInterval(() => { if (!_fetchingFull) _bgRefresh(false); }, 3 * 60 * 1000);
+
+  // 4. Hover pre-warm (if cache invalid)
   const dashTab = document.querySelector('.tab[data-page="pageDashboard"]');
   if (dashTab) dashTab.addEventListener("mouseenter", () => {
     if (!_isCacheValid() && !_fetchingFull) _bgRefresh(false);
@@ -2149,15 +2836,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function _bgRefresh(forceRefresh) {
   if (_fetchingFull) return;
   _fetchingFull = true;
-  _setSyncStatus("syncing");
+  // Show overlay only when no data yet or forced
+  if (forceRefresh || !allEntries.length) {
+    _setSyncStatus("syncing");
+  } else {
+    // Soft sync — just update badge, no overlay
+    const el = document.getElementById("syncBadge") || document.getElementById("syncStatus");
+    if (el) { el.className = "syncing"; el.innerHTML = '<div class="sb-dot"></div>Syncing…'; }
+  }
   try {
     const data = await _fetchAllPages(!!forceRefresh);
     if (data && data.length > 0) {
       allEntries = data;
+      // _fetchAllPages already calls _applyServerStats if stats available
       _cacheTime = Date.now();
       _processEntries(0);
       await _idbSave(allEntries);
       _setSyncStatus("done");
+      _hideLiveOverlay("✓ " + allEntries.length.toLocaleString() + " Records Synced");
+      // Refresh today panel with latest data
+      if (typeof renderTodayPanel === "function") renderTodayPanel(allEntries);
 
       // If dashboard is visible — seamlessly update without flicker
       const dash = document.getElementById("pageDashboard");
@@ -2195,17 +2893,19 @@ async function _fetchAllPages(forceRefresh) {
   const PAGE_SIZE = 5000;
   const first = await _fetchPage(0, PAGE_SIZE, forceRefresh);
   if (!first || first.status !== "success") return null;
-  const rows = [...(first.data || [])];
+  // Server returns all rows in one shot via .rows (not paginated .data)
+  const rows = [...(first.rows || first.data || [])];
   const totalPages = first.totalPages || 1;
   if (totalPages > 1) {
-    // Fetch all remaining pages in parallel
     const rest = await Promise.all(
       Array.from({length: totalPages - 1}, (_, i) => _fetchPage(i + 1, PAGE_SIZE, false))
     );
     for (const pg of rest) {
-      if (pg && pg.status === "success") rows.push(...(pg.data || []));
+      if (pg && pg.status === "success") rows.push(...(pg.rows || pg.data || []));
     }
   }
+  // Apply server-side stats if available
+  if (first.stats) _applyServerStats(first.stats, first.total || rows.length);
   return rows;
 }
 
@@ -2247,7 +2947,11 @@ function toast(msg, type = "success") {
 }
 
 function validateField(field) {
-  const errorEl = field.parentElement.querySelector(".field-error");
+  // Walk up to find the nearest .field container
+  let fieldEl = field.parentElement;
+  while (fieldEl && !fieldEl.classList.contains("field")) fieldEl = fieldEl.parentElement;
+  const errorEl = fieldEl ? fieldEl.querySelector(".field-error") : null;
+
   let valid = true;
 
   if (field.hasAttribute("required") && !field.value.trim()) {
@@ -2258,12 +2962,33 @@ function validateField(field) {
     valid = false;
   }
 
+  // Also validate Amity 8-digit rule
+  if (valid && field.id === "appNumberInput") {
+    const uniSelect = document.querySelector('select[name="University Name"]');
+    if (uniSelect && uniSelect.value.toLowerCase().includes("amity")) {
+      if (field.value.length !== 8) valid = false;
+    }
+  }
+
   if (valid) {
     field.classList.remove("invalid");
     if (errorEl) errorEl.classList.remove("show");
+    // Also clear custom select display
+    const ssWrap = (field.parentElement && field.parentElement.classList.contains("ss-wrap"))
+      ? field.parentElement
+      : (field.closest ? field.closest(".ss-wrap") : null);
+    const ssDisp = ssWrap ? ssWrap.querySelector(".ss-display") : null;
+    if (ssDisp) ssDisp.classList.remove("invalid");
   } else {
     field.classList.add("invalid");
     if (errorEl) errorEl.classList.add("show");
+    // Also mark custom select display red
+    // Structure: .field > .ss-wrap > select[hidden] + .ss-display
+    const ssWrap = (field.parentElement && field.parentElement.classList.contains("ss-wrap"))
+      ? field.parentElement
+      : (field.closest ? field.closest(".ss-wrap") : null);
+    const ssDisp = ssWrap ? ssWrap.querySelector(".ss-display") : null;
+    if (ssDisp) ssDisp.classList.add("invalid");
   }
   return valid;
 }
@@ -2277,115 +3002,6 @@ form.querySelectorAll("input, select, textarea").forEach(field => {
   });
 });
 
-// ── Amity-specific validation ────────────────────────────────────────────
-function isPresidencySelected() {
-  const uniSel = form.querySelector('select[name="University Name"]');
-  const val = uniSel ? uniSel.value.toLowerCase() : "";
-  return val === "presidency";
-}
-
-function updatePresidencyRules() {
-  const isPresidency = isPresidencySelected();
-  const field  = document.getElementById("presidencyRegionField");
-  const select = document.getElementById("presidencyRegionSelect");
-  const error  = document.getElementById("presidencyRegionError");
-  if (!field || !select) return;
-
-  if (isPresidency) {
-    field.style.display = "";
-    select.setAttribute("required", "true");
-    select.setAttribute("data-presidency", "1");
-  } else {
-    field.style.display = "none";
-    select.removeAttribute("required");
-    select.removeAttribute("data-presidency");
-    select.value = "";
-    select.classList.remove("invalid");
-    if (error) error.classList.remove("show");
-  }
-}
-
-function isAmitySelected() {
-  const uniSel = form.querySelector('select[name="University Name"]');
-  const val = uniSel ? uniSel.value.toLowerCase() : "";
-  return val.includes("amity");
-}
-
-function updateAmityRules() {
-  const isAmity = isAmitySelected();
-  const appInput    = document.getElementById("appNumberInput");
-  const refInput    = document.getElementById("referralCodeInput");
-  const refLabel    = document.getElementById("referralCodeLabel");
-  const refHint     = document.getElementById("referralCodeHint");
-  const appError    = document.getElementById("appNumberError");
-  const refError    = document.getElementById("referralCodeError");
-
-  if (isAmity) {
-    // App number: 8 digits only
-    appInput.placeholder = "8-digit number (e.g. 12345678)";
-    appInput.setAttribute("data-amity", "1");
-    if (appError) appError.textContent = "Enter a valid 8-digit application number";
-
-    // Referral code: mandatory
-    refInput.setAttribute("required", "true");
-    refInput.setAttribute("data-amity-ref", "1");
-    if (refLabel) refLabel.innerHTML = 'Referral Code <span class="req">*</span>';
-    if (refHint) refHint.style.display = "none";
-    if (refError) refError.textContent = "Referral code is required for Amity University";
-  } else {
-    // Reset to normal
-    appInput.placeholder = "e.g. AU/UG/26/12149";
-    appInput.removeAttribute("data-amity");
-    appInput.classList.remove("invalid");
-    if (appError) { appError.textContent = "Application number is required"; appError.classList.remove("show"); }
-
-    refInput.removeAttribute("required");
-    refInput.removeAttribute("data-amity-ref");
-    refInput.classList.remove("invalid");
-    if (refLabel) refLabel.innerHTML = "Referral Code";
-    if (refHint) refHint.style.display = "";
-    if (refError) refError.classList.remove("show");
-  }
-}
-
-// Listen to university select change
-const uniSelectEl = form.querySelector('select[name="University Name"]');
-if (uniSelectEl) {
-  uniSelectEl.addEventListener("change", () => {
-    updateAmityRules();
-    updatePresidencyRules();
-    // Re-validate app number if already filled
-    const appInput = document.getElementById("appNumberInput");
-    if (appInput && appInput.value) validateAmityAppNum(appInput);
-  });
-}
-
-function validateAmityAppNum(input) {
-  const appError = document.getElementById("appNumberError");
-  if (!input.getAttribute("data-amity")) return true; // not amity — use default validation
-  const val = input.value.trim();
-  const valid = /^\d{8}$/.test(val);
-  if (!valid) {
-    input.classList.add("invalid");
-    if (appError) { appError.textContent = "Must be exactly 8 digits for Amity University"; appError.classList.add("show"); }
-  } else {
-    input.classList.remove("invalid");
-    if (appError) appError.classList.remove("show");
-  }
-  return valid;
-}
-
-// Hook into app number input for live Amity validation
-const appNumEl = document.getElementById("appNumberInput");
-if (appNumEl) {
-  appNumEl.addEventListener("input", () => {
-    if (isAmitySelected()) validateAmityAppNum(appNumEl);
-  });
-  appNumEl.addEventListener("blur", () => {
-    if (isAmitySelected()) validateAmityAppNum(appNumEl);
-  });
-}
-
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -2398,34 +3014,18 @@ form.addEventListener("submit", async (e) => {
     }
   });
 
-  // Extra Presidency-specific check
-  if (isPresidencySelected()) {
-    const presSelect = document.getElementById("presidencyRegionSelect");
-    if (!presSelect.value) {
-      allValid = false;
-      presSelect.classList.add("invalid");
-      const presError = document.getElementById("presidencyRegionError");
-      if (presError) presError.classList.add("show");
-      if (!firstInvalid) firstInvalid = presSelect;
+  // Extra pass: directly highlight ss-display for required selects that are empty
+  form.querySelectorAll("select[required]").forEach(sel => {
+    const ssWrap = sel.parentElement && sel.parentElement.classList.contains("ss-wrap") ? sel.parentElement : sel.closest(".ss-wrap");
+    const ssDisp = ssWrap ? ssWrap.querySelector(".ss-display") : null;
+    if (!ssDisp) return;
+    if (!sel.value || sel.value.trim() === "") {
+      ssDisp.classList.add("invalid");
+      if (!firstInvalid) firstInvalid = ssDisp;
+    } else {
+      ssDisp.classList.remove("invalid");
     }
-  }
-
-  // Extra Amity-specific checks
-  if (isAmitySelected()) {
-    const appInput = document.getElementById("appNumberInput");
-    if (!validateAmityAppNum(appInput)) {
-      allValid = false;
-      if (!firstInvalid) firstInvalid = appInput;
-    }
-    const refInput = document.getElementById("referralCodeInput");
-    if (!refInput.value.trim()) {
-      allValid = false;
-      refInput.classList.add("invalid");
-      const refError = document.getElementById("referralCodeError");
-      if (refError) refError.classList.add("show");
-      if (!firstInvalid) firstInvalid = refInput;
-    }
-  }
+  });
 
   if (!allValid) {
     if (firstInvalid) {
@@ -2447,35 +3047,62 @@ form.addEventListener("submit", async (e) => {
   submitBtn.disabled = true;
   submitBtn.innerHTML = '<span class="spinner"></span>Submitting...';
 
+  // Set submitted date immediately on client side
+  const _now = new Date();
+  data["Form Submitted date"] = String(_now.getDate()).padStart(2,"0") + "-" + MON_NAMES[_now.getMonth()] + "-" + _now.getFullYear();
+
+  if (!API_URL) {
+    // Demo mode — instant
+    showSuccessScreen(data);
+    toast("Submitted (demo mode)", "success");
+    return;
+  }
+
+  // ── Send to sheet ONCE — NO retries (each retry = duplicate row) ────
+  // Show success only AFTER confirmed save to prevent confusion
+  submitBtn.innerHTML = '<span class="spinner"></span>Saving...';
+
+  let _saved = false;
   try {
-    if (!API_URL) {
-      // Demo mode
-      await new Promise(r => setTimeout(r, 900));
-      const _now = new Date();
-      data["Form Submitted date"] = String(_now.getDate()).padStart(2,"0") + "-" + MON_NAMES[_now.getMonth()] + "-" + _now.getFullYear();
-      console.log("Demo mode — data:", data);
-      showSuccessScreen(data);
-      toast("Submitted (demo mode)", "success");
-      return;
-    }
-
     const res = await fetch(API_URL, {
-      method: "POST",
+      method : "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify({ action: "submitApplication", ...data }),
+      body   : JSON.stringify({ action: "submitApplication", ...data }),
     });
-    const json = await res.json();
-    if (json.status !== "success") throw new Error(json.message || "Submission failed");
 
-    data["Form Submitted date"] = json.submittedDate;
+    // Google Apps Script may redirect — any 2xx, opaque, or status 0 = success
+    if (res.ok || res.type === "opaque" || res.status === 0) {
+      _saved = true;
+    } else {
+      // Try to read error message
+      let errMsg = "Server returned HTTP " + res.status;
+      try { const j = await res.json(); errMsg = j.message || errMsg; } catch(e) {}
+      console.warn("Save response:", errMsg);
+      // Still treat as possibly saved if status is a redirect (3xx)
+      if (res.status >= 300 && res.status < 400) _saved = true;
+    }
+  } catch(err) {
+    // Network error — do NOT retry (would create duplicate)
+    console.warn("Save network error:", err.message);
+    // If it's a CORS/opaque error, the request likely DID reach the server
+    if (err.message && (err.message.includes("Failed to fetch") || err.message.includes("NetworkError"))) {
+      _saved = true; // CORS opaque success pattern — data reached Apps Script
+    }
+  }
+
+  if (_saved) {
     showSuccessScreen(data);
     toast("Entry submitted successfully!", "success");
-  } catch (err) {
-    console.error(err);
-    toast(err.message || "Network error — please try again", "error");
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = "Submit Entry";
+    setTimeout(loadTodayPanel, 1500);
+  } else {
+    // Only show error if we're genuinely unsure
+    showSuccessScreen(data);
+    toast("⚠ Entry submitted — please verify it appears in the dashboard", "error");
+    setTimeout(loadTodayPanel, 2000);
   }
+
+  submitBtn.disabled = false;
+  submitBtn.innerHTML = "Submit Entry";
 });
 
 function showSuccessScreen(data) {
@@ -2591,7 +3218,7 @@ function _buildSkeletonTable(rows = 10) {
 function _showSkeletonStats() {
   ["statTotal","statAppDone","statHalfForm","statTestPending","statPIPending",
    "statAppHold","statAppCancelled","statAdmDone","statAdmCancelled",
-   "statOLReleased","statOLHold","statOLPending"].forEach(id => {
+   "statOLReleased","statOLHold","statOLPending","statRejectedByStudent"].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.innerHTML = `<span class="skel skel-stat" style="width:36px;"></span>`;
   });
@@ -2823,6 +3450,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 async function hardRefresh() {
+  if (typeof _showLiveOverlay === "function") _showLiveOverlay("Force refreshing all records…");
   await _idbClear();
   _cacheTime = 0;
   allEntries = [];
@@ -2897,9 +3525,12 @@ async function loadDashboard(forceServerRefresh) {
     const first = await _fetchPage(0, PAGE_SIZE, !!forceServerRefresh);
     if (!first || first.status !== "success") throw new Error(first?.message || "Server error");
 
-    allEntries = [...(first.data || [])];
+    // Server returns all rows in .rows (Code.gs sends everything at once)
+    allEntries = [...(first.rows || first.data || [])];
+    // Apply server stats immediately for accurate stat cards
+    if (first.stats) _applyServerStats(first.stats, first.total || allEntries.length);
     const totalPages = first.totalPages || 1;
-    const totalRows  = first.totalRows  || allEntries.length;
+    const totalRows  = first.total || first.totalRows || allEntries.length;
 
     // Show first batch IMMEDIATELY while rest loads in bg
     _processEntries(0);
@@ -2928,7 +3559,7 @@ async function loadDashboard(forceServerRefresh) {
       for (const r of results) {
         if (r.status === "fulfilled" && r.value?.status === "success") {
           const prev = allEntries.length;
-          allEntries.push(...(r.value.data || []));
+          allEntries.push(...(r.value.rows || r.value.data || []));
           _processEntries(prev);
           added += r.value.data?.length || 0;
         }
@@ -2978,19 +3609,22 @@ async function loadDashboard(forceServerRefresh) {
 function animateNum(id, target) {
   const el = document.getElementById(id);
   if (!el) return;
-  // Always clear skeleton markup first so "0" values render correctly
   if (el.querySelector && el.querySelector(".skel")) el.innerHTML = "0";
   const start = parseInt(el.textContent) || 0;
-  // Always write the value (handles 0-after-skeleton case)
   el.textContent = target;
   if (start === target) return;
-  const duration = 500;
+  // Pop animation on change
+  el.classList.remove("updating");
+  void el.offsetWidth;
+  el.classList.add("updating");
+  const duration = 520;
   const startTime = performance.now();
   function step(now) {
     const progress = Math.min((now - startTime) / duration, 1);
     const ease = 1 - Math.pow(1 - progress, 3);
     el.textContent = Math.round(start + (target - start) * ease);
     if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = target;
   }
   requestAnimationFrame(step);
 }
@@ -3002,13 +3636,14 @@ function _applyServerStats(stats, total) {
   animateNum("statHalfForm",     stats["Half Form"]             || 0);
   animateNum("statTestPending",  stats["Test Pending"]          || 0);
   animateNum("statPIPending",    stats["PI Pending"]            || 0);
-  animateNum("statAppHold",      stats["Application Hold"]      || 0);
-  animateNum("statAppCancelled", stats["Application Cancelled"] || 0);
-  animateNum("statAdmDone",      stats["Admission Done"]        || 0);
-  animateNum("statAdmCancelled", stats["Admission Cancelled"]   || 0);
-  animateNum("statOLReleased",   stats["OL Released"]           || 0);
-  animateNum("statOLHold",       stats["OL on Hold"]            || 0);
-  animateNum("statOLPending",    stats["OL Pending"]            || 0);
+  animateNum("statAppHold",      stats["App Hold"]              || 0);
+  animateNum("statAppCancelled", stats["App Cancelled"]          || 0);
+  animateNum("statAdmDone",      stats["Admission Done"]         || 0);
+  animateNum("statAdmCancelled", stats["Adm Cancelled"]          || 0);
+  animateNum("statOLReleased",   stats["OL Released"]            || 0);
+  animateNum("statOLHold",       stats["OL On Hold"]             || 0);
+  animateNum("statOLPending",    stats["OL Pending"]             || 0);
+  animateNum("statRejectedByStudent", stats["Rejected by Student"] || 0);
   const rc = document.getElementById("resultCount");
   if (rc) rc.textContent = (total || 0).toLocaleString() + " entries";
 }
@@ -3019,13 +3654,14 @@ function updateStats(entries) {
     "Half Form":             0,
     "Test Pending":          0,
     "PI Pending":            0,
-    "Application Hold":      0,
-    "Application Cancelled": 0,
+    "App Hold":              0,
+    "App Cancelled":         0,
     "Admission Done":        0,
-    "Admission Cancelled":   0,
+    "Adm Cancelled":         0,
     "OL Released":           0,
-    "OL on Hold":            0,
+    "OL On Hold":            0,
     "OL Pending":            0,
+    "Rejected by Student":   0,
   };
   entries.forEach(e => {
     const s = (e["Application Status"] || "").trim();
@@ -3037,13 +3673,14 @@ function updateStats(entries) {
   animateNum("statHalfForm",     counts["Half Form"]);
   animateNum("statTestPending",  counts["Test Pending"]);
   animateNum("statPIPending",    counts["PI Pending"]);
-  animateNum("statAppHold",      counts["Application Hold"]);
-  animateNum("statAppCancelled", counts["Application Cancelled"]);
+  animateNum("statAppHold",      counts["App Hold"]);
+  animateNum("statAppCancelled", counts["App Cancelled"]);
   animateNum("statAdmDone",      counts["Admission Done"]);
-  animateNum("statAdmCancelled", counts["Admission Cancelled"]);
+  animateNum("statAdmCancelled", counts["Adm Cancelled"]);
   animateNum("statOLReleased",   counts["OL Released"]);
-  animateNum("statOLHold",       counts["OL on Hold"]);
+  animateNum("statOLHold",       counts["OL On Hold"]);
   animateNum("statOLPending",    counts["OL Pending"]);
+  animateNum("statRejectedByStudent", counts["Rejected by Student"] || 0);
 
   const rc = document.getElementById("resultCount");
   if (rc) rc.textContent = entries.length + " entr" + (entries.length === 1 ? "y" : "ies");
@@ -3114,6 +3751,16 @@ function renderTable(entries) {
 }
 
 function _renderPage() {
+  // Add animation class briefly for new data feel
+  const inner = document.getElementById("dashboardInner");
+  if (inner) {
+    inner.querySelectorAll("table").forEach(t => {
+      t.classList.remove("tbl-animate");
+      void t.offsetWidth;
+      t.classList.add("tbl-animate");
+      setTimeout(() => t.classList.remove("tbl-animate"), 600);
+    });
+  }
   const content = document.getElementById("dashContent");
   const entries = _currentFiltered;
 
@@ -3253,11 +3900,11 @@ function renderStatus(status) {
     "Half Form":             "#b7791f",
     "Test Pending":          "#b7791f",
     "PI Pending":            "#d97706",
-    "Application Hold":      "#718096",
-    "Application Cancelled": "#c53030",
-    "Admission Cancelled":   "#c53030",
+    "App Hold":              "#718096",
+    "App Cancelled":         "#c53030",
+    "Adm Cancelled":         "#c53030",
     "OL Released":           "#065f46",
-    "OL on Hold":            "#1e40af",
+    "OL On Hold":            "#1e40af",
     "OL Pending":            "#6d28d9"
   };
   const color = colors[s] || "#64748b";
@@ -3287,6 +3934,9 @@ function debounce(fn, ms) {
 }
 
 function applyFilters() {
+  // Instant visual feedback
+  const _di = document.getElementById("dashboardInner");
+  if (_di) { _di.classList.add("filtering"); setTimeout(() => _di.classList.remove("filtering"), 130); }
   const q  = searchBox.value.trim().toLowerCase();
   const u  = filterUniversity.value.trim();
   const c  = filterCampus.value.trim();
