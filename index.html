@@ -1361,6 +1361,48 @@
   #dashboardInner { transition: opacity 0.15s ease; }
   #dashboardInner.filtering { opacity: 0.6; }
 
+
+  /* ── Admin Panel ── */
+  .admin-wrap { max-width: 1100px; margin: 0 auto; padding: 28px 24px; }
+  .admin-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+  .admin-top h2 { font-size: 20px; font-weight: 700; color: var(--primary); }
+  .admin-top p  { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+  .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  @media (max-width: 700px) { .admin-grid { grid-template-columns: 1fr; } }
+  .admin-card { background: #fff; border-radius: 14px; border: 1px solid var(--border); box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; }
+  .admin-card-header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; }
+  .admin-card-header-left { display: flex; align-items: center; gap: 9px; }
+  .admin-card-icon { font-size: 18px; }
+  .admin-card-title { font-size: 13px; font-weight: 700; color: #fff; }
+  .admin-card-count { font-size: 11px; background: rgba(255,255,255,0.2); color: #fff; padding: 2px 9px; border-radius: 20px; font-weight: 600; }
+  .admin-card-body { padding: 14px 18px; }
+  .admin-add-row { display: flex; gap: 7px; margin-bottom: 10px; }
+  .admin-inp { flex: 1; padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; font-family: inherit; color: var(--text); background: #f9f9f9; outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+  .admin-inp:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 3px rgba(26,54,93,0.08); }
+  .admin-inp::placeholder { color: #a0aec0; }
+  .admin-btn-add { background: var(--primary); color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: background 0.15s; }
+  .admin-btn-add:hover { background: var(--primary-light); }
+  .admin-search { position: relative; margin-bottom: 8px; }
+  .admin-search input { width: 100%; padding: 6px 10px 6px 28px; border: 1px solid var(--border); border-radius: 7px; font-size: 12px; font-family: inherit; background: #f9f9f9; outline: none; color: var(--text); transition: border-color 0.15s; }
+  .admin-search input:focus { border-color: var(--primary); background: #fff; }
+  .admin-search-icon { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); color: #a0aec0; font-size: 12px; pointer-events: none; }
+  .admin-tags { display: flex; flex-wrap: wrap; gap: 5px; max-height: 200px; overflow-y: auto; padding: 2px 0; }
+  .admin-tags::-webkit-scrollbar { width: 3px; }
+  .admin-tags::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  .admin-tag { display: inline-flex; align-items: center; gap: 4px; background: #eef2f8; color: var(--primary); border: 1px solid #c8d5ed; border-radius: 20px; padding: 3px 9px 3px 11px; font-size: 11.5px; font-weight: 500; animation: tagFadeIn 0.18s ease; }
+  @keyframes tagFadeIn { from { opacity:0; transform:scale(0.88); } to { opacity:1; transform:scale(1); } }
+  .admin-tag-del { background: none; border: none; cursor: pointer; color: #a0aec0; font-size: 13px; line-height: 1; padding: 0; width: 15px; height: 15px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: color 0.12s, background 0.12s; }
+  .admin-tag-del:hover { color: #c53030; background: #fef2f2; }
+  .admin-empty { font-size: 12px; color: var(--text-muted); font-style: italic; padding: 6px 0; }
+  .admin-save-bar { margin-top: 22px; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .admin-save-info { font-size: 12px; color: var(--text-muted); }
+  .admin-save-info strong { color: var(--primary); }
+  .admin-btn-save { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: #fff; border: none; border-radius: 10px; padding: 10px 26px; font-size: 13px; font-weight: 700; cursor: pointer; box-shadow: 0 3px 10px rgba(26,54,93,0.25); transition: transform 0.15s, box-shadow 0.15s; }
+  .admin-btn-save:hover { transform: translateY(-1px); box-shadow: 0 5px 16px rgba(26,54,93,0.35); }
+  .admin-btn-save:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .admin-changed-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #e53e3e; margin-left: 4px; vertical-align: middle; }
+
+  
 </style>
 </head>
 <body>
@@ -1394,12 +1436,6 @@
           <label>Counsellor Name <span class="req">*</span></label>
           <select name="Counsellor Name" required>
             <option value="">Select counsellor</option>
-            <option>Tejas nagpure</option>
-            <option>Mayuri patil</option>
-            <option>Mansi more</option>
-            <option>Anshu Vishwakarma</option>
-            <option>Aishwarya bhokare</option>
-            <option>Amruta salunkhe</option>
             <option>Ranjita Behura</option>
             <option>Sugyani Naik</option>
             <option>Abhishek Das</option>
@@ -1490,6 +1526,8 @@
             <option>Diksha Surwade</option>
             <option>Mahek Imran Shaikh</option>
             <option>Badal Kumar Mahapatra</option>
+            <option>Aniket Nevhal</option>
+            <option>Akshay Saraf</option>
           </select>
           <div class="field-error">Counsellor name is required</div>
         </div>
@@ -2100,12 +2138,6 @@
           <div class="field"><label>Counsellor Name</label>
             <select name="Counsellor Name">
               <option value="">Select counsellor</option>
-            <option>Tejas nagpure</option>
-            <option>Mayuri patil</option>
-            <option>Mansi more</option>
-            <option>Anshu Vishwakarma</option>
-            <option>Aishwarya bhokare</option>
-            <option>Amruta salunkhe</option>
               <option>Ranjita Behura</option>
               <option>Sugyani Naik</option>
               <option>Abhishek Das</option>
@@ -2196,6 +2228,8 @@
               <option>Diksha Surwade</option>
               <option>Mahek Imran Shaikh</option>
               <option>Badal Kumar Mahapatra</option>
+              <option>Aniket Nevhal</option>
+              <option>Akshay Saraf</option>
             </select>
           </div>
           <div class="field"><label>Team Leader</label><input type="text" name="Team Leader"></div>
@@ -2248,6 +2282,167 @@
   </div>
 </div>
 
+
+  <!-- ══════════════════ ADMIN PAGE ══════════════════ -->
+  <div class="page" id="pageAdmin">
+    <div class="admin-wrap">
+      <div class="admin-top">
+        <div>
+          <h2>⚙️ Admin Panel</h2>
+          <p>Add or remove options from portal dropdowns. Click Save Changes to apply.</p>
+        </div>
+      </div>
+
+      <div class="admin-grid">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-header-left"><span class="admin-card-icon">👤</span><span class="admin-card-title">Counsellor Names</span></div>
+            <span class="admin-card-count" id="adm-count-counsellors">0</span>
+          </div>
+          <div class="admin-card-body">
+            <div class="admin-add-row">
+              <input class="admin-inp" id="adm-inp-counsellors" placeholder="New counsellor name…" onkeydown="if(event.key==='Enter') admAdd('counsellors')">
+              <button class="admin-btn-add" onclick="admAdd('counsellors')">＋ Add</button>
+            </div>
+            <div class="admin-search"><span class="admin-search-icon">🔍</span><input placeholder="Search…" oninput="admFilter('counsellors',this.value)"></div>
+            <div class="admin-tags" id="adm-tags-counsellors"></div>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-header-left"><span class="admin-card-icon">🎓</span><span class="admin-card-title">University Names</span></div>
+            <span class="admin-card-count" id="adm-count-universities">0</span>
+          </div>
+          <div class="admin-card-body">
+            <div class="admin-add-row">
+              <input class="admin-inp" id="adm-inp-universities" placeholder="New university name…" onkeydown="if(event.key==='Enter') admAdd('universities')">
+              <button class="admin-btn-add" onclick="admAdd('universities')">＋ Add</button>
+            </div>
+            <div class="admin-search"><span class="admin-search-icon">🔍</span><input placeholder="Search…" oninput="admFilter('universities',this.value)"></div>
+            <div class="admin-tags" id="adm-tags-universities"></div>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-header-left"><span class="admin-card-icon">🏆</span><span class="admin-card-title">Team Leaders</span></div>
+            <span class="admin-card-count" id="adm-count-team_leaders">0</span>
+          </div>
+          <div class="admin-card-body">
+            <div class="admin-add-row">
+              <input class="admin-inp" id="adm-inp-team_leaders" placeholder="New team leader…" onkeydown="if(event.key==='Enter') admAdd('team_leaders')">
+              <button class="admin-btn-add" onclick="admAdd('team_leaders')">＋ Add</button>
+            </div>
+            <div class="admin-search"><span class="admin-search-icon">🔍</span><input placeholder="Search…" oninput="admFilter('team_leaders',this.value)"></div>
+            <div class="admin-tags" id="adm-tags-team_leaders"></div>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-header-left"><span class="admin-card-icon">🏛️</span><span class="admin-card-title">Campus Names</span></div>
+            <span class="admin-card-count" id="adm-count-campuses">0</span>
+          </div>
+          <div class="admin-card-body">
+            <div class="admin-add-row">
+              <input class="admin-inp" id="adm-inp-campuses" placeholder="New campus name…" onkeydown="if(event.key==='Enter') admAdd('campuses')">
+              <button class="admin-btn-add" onclick="admAdd('campuses')">＋ Add</button>
+            </div>
+            <div class="admin-search"><span class="admin-search-icon">🔍</span><input placeholder="Search…" oninput="admFilter('campuses',this.value)"></div>
+            <div class="admin-tags" id="adm-tags-campuses"></div>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-header-left"><span class="admin-card-icon">👔</span><span class="admin-card-title">Managers</span></div>
+            <span class="admin-card-count" id="adm-count-managers">0</span>
+          </div>
+          <div class="admin-card-body">
+            <div class="admin-add-row">
+              <input class="admin-inp" id="adm-inp-managers" placeholder="New manager name…" onkeydown="if(event.key==='Enter') admAdd('managers')">
+              <button class="admin-btn-add" onclick="admAdd('managers')">＋ Add</button>
+            </div>
+            <div class="admin-search"><span class="admin-search-icon">🔍</span><input placeholder="Search…" oninput="admFilter('managers',this.value)"></div>
+            <div class="admin-tags" id="adm-tags-managers"></div>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-header-left"><span class="admin-card-icon">📋</span><span class="admin-card-title">Application Statuses</span></div>
+            <span class="admin-card-count" id="adm-count-statuses">0</span>
+          </div>
+          <div class="admin-card-body">
+            <div class="admin-add-row">
+              <input class="admin-inp" id="adm-inp-statuses" placeholder="New status…" onkeydown="if(event.key==='Enter') admAdd('statuses')">
+              <button class="admin-btn-add" onclick="admAdd('statuses')">＋ Add</button>
+            </div>
+            <div class="admin-search"><span class="admin-search-icon">🔍</span><input placeholder="Search…" oninput="admFilter('statuses',this.value)"></div>
+            <div class="admin-tags" id="adm-tags-statuses"></div>
+          </div>
+        </div>
+
+        <div class="admin-card" style="grid-column: 1 / -1;">
+          <div class="admin-card-header">
+            <div class="admin-card-header-left"><span class="admin-card-icon">📣</span><span class="admin-card-title">Sources</span></div>
+            <span class="admin-card-count" id="adm-count-sources">0</span>
+          </div>
+          <div class="admin-card-body">
+            <div class="admin-add-row">
+              <input class="admin-inp" id="adm-inp-sources" placeholder="New source…" onkeydown="if(event.key==='Enter') admAdd('sources')">
+              <button class="admin-btn-add" onclick="admAdd('sources')">＋ Add</button>
+            </div>
+            <div class="admin-search"><span class="admin-search-icon">🔍</span><input placeholder="Search…" oninput="admFilter('sources',this.value)"></div>
+            <div class="admin-tags" id="adm-tags-sources" style="max-height:260px;"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="admin-save-bar">
+        <div class="admin-save-info">Changes are applied <strong>live to the form</strong> immediately. Save persists across sessions.</div>
+        <button class="admin-btn-save" onclick="admSaveAll()" id="admSaveBtn">💾 Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════ ADMIN PASSWORD MODAL ══════════════════ -->
+  <div id="adminAuthModal" style="display:none;position:fixed;inset:0;background:rgba(15,25,50,0.65);backdrop-filter:blur(6px);z-index:99999;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:#fff;border-radius:18px;width:100%;max-width:380px;box-shadow:0 30px 80px rgba(0,0,0,0.25);overflow:hidden;animation:modalSlideIn 0.25s cubic-bezier(0.16,1,0.3,1) both;">
+      <div style="background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);padding:24px;text-align:center;">
+        <div style="font-size:36px;margin-bottom:8px;">⚙️</div>
+        <div style="font-size:17px;font-weight:700;color:#fff;">Admin Access</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px;">Enter password to continue</div>
+      </div>
+      <div style="padding:24px;">
+        <div style="position:relative;margin-bottom:14px;">
+          <input type="password" id="adminPwdInput" placeholder="Enter admin password"
+            style="width:100%;padding:11px 42px 11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;outline:none;transition:border-color 0.15s;box-sizing:border-box;"
+            onkeydown="if(event.key==='Enter') adminLoginSubmit()"
+            onfocus="this.style.borderColor='var(--primary)'"
+            onblur="this.style.borderColor='var(--border)'">
+          <button onclick="toggleAdminPwd()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:#94a3b8;" id="adminPwdToggle">👁</button>
+        </div>
+        <div id="adminPwdError" style="display:none;color:#c53030;font-size:12px;margin-bottom:10px;padding:8px 12px;background:#fff5f5;border-radius:8px;border:1px solid #feb2b2;">
+          ❌ Incorrect password. Please try again.
+        </div>
+        <button onclick="adminLoginSubmit()"
+          style="width:100%;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 14px rgba(26,54,93,0.3);transition:transform 0.15s;"
+          onmouseover="this.style.transform='translateY(-1px)'"
+          onmouseout="this.style.transform=''">
+          Unlock Admin Panel
+        </button>
+        <button onclick="closeAdminModal()"
+          style="width:100%;background:none;color:var(--text-muted);border:none;padding:10px;font-size:13px;cursor:pointer;margin-top:6px;font-family:inherit;">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+  </div>
 </main>
 
 <!-- ══════════════════ TAB BAR ══════════════════ -->
@@ -2260,6 +2455,10 @@
     <span class="tab-icon">📊</span>
     <span>Dashboard</span>
   </button>
+  <button class="tab" data-page="pageAdmin" onclick="adminLogin()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+    Admin
+  </button>
 </nav>
 
 <div class="toast-container" id="toastContainer"></div>
@@ -2270,6 +2469,7 @@
 // CONFIG
 // ════════════════════════════════════════════════════════════
 const API_URL = "https://script.google.com/macros/s/AKfycbwYK8fCg7yYqciWJUgjgsPGQrYAsSVKFm0IOLl59tT9245mxGyk9EMge5B3U3Ev8Vo7fg/exec";
+const ADMIN_PIN = "Higher2026"; // ← Change this password
 
 // ════════════════════════════════════════════════════════════
 // WEB WORKER — offload JSON parsing + entry processing to
@@ -3056,65 +3256,76 @@ form.addEventListener("submit", async (e) => {
     delete data["Course Specialization"];
   }
 
-  submitBtn.disabled = true;
-  submitBtn.innerHTML = '<span class="spinner"></span>Submitting...';
-
-  // Set submitted date immediately on client side
+  // ── Set date immediately ────────────────────────────────────────
   const _now = new Date();
   data["Form Submitted date"] = String(_now.getDate()).padStart(2,"0") + "-" + MON_NAMES[_now.getMonth()] + "-" + _now.getFullYear();
 
   if (!API_URL) {
-    // Demo mode — instant
     showSuccessScreen(data);
     toast("Submitted (demo mode)", "success");
     return;
   }
 
-  // ── Send to sheet ONCE — NO retries (each retry = duplicate row) ────
-  // Show success only AFTER confirmed save to prevent confusion
-  submitBtn.innerHTML = '<span class="spinner"></span>Saving...';
+  // ── Show saving state ────────────────────────────────────────────
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="spinner"></span> Saving…';
 
-  let _saved = false;
-  try {
-    const res = await fetch(API_URL, {
-      method : "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body   : JSON.stringify({ action: "submitApplication", ...data }),
-    });
+  // ── AWAIT the save — data safety is priority ─────────────────────
+  let saved = false;
+  let attempts = 0;
+  const MAX_ATTEMPTS = 3;
 
-    // Google Apps Script may redirect — any 2xx, opaque, or status 0 = success
-    if (res.ok || res.type === "opaque" || res.status === 0) {
-      _saved = true;
-    } else {
-      // Try to read error message
-      let errMsg = "Server returned HTTP " + res.status;
-      try { const j = await res.json(); errMsg = j.message || errMsg; } catch(e) {}
-      console.warn("Save response:", errMsg);
-      // Still treat as possibly saved if status is a redirect (3xx)
-      if (res.status >= 300 && res.status < 400) _saved = true;
+  while (!saved && attempts < MAX_ATTEMPTS) {
+    attempts++;
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000); // 15s timeout per attempt
+
+      const res = await fetch(API_URL, {
+        method : "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body   : JSON.stringify({ action: "submitApplication", ...data }),
+        signal : controller.signal,
+      });
+      clearTimeout(timeout);
+
+      // Apps Script CORS = opaque (type==="opaque") or status 0 — both mean success
+      if (res.ok || res.type === "opaque" || res.status === 0) {
+        saved = true;
+      } else if (res.status >= 300 && res.status < 400) {
+        saved = true; // redirect = success
+      } else {
+        let errMsg = "HTTP " + res.status;
+        try { const j = await res.json(); errMsg = j.message || errMsg; } catch(e) {}
+        console.warn("Attempt " + attempts + " failed:", errMsg);
+        if (attempts < MAX_ATTEMPTS) await new Promise(r => setTimeout(r, 1000 * attempts));
+      }
+    } catch(err) {
+      clearTimeout && clearTimeout();
+      if (err.name === "AbortError") {
+        console.warn("Attempt " + attempts + " timed out");
+      } else if (err.message && (err.message.includes("Failed to fetch") || err.message.includes("NetworkError") || err.message.includes("opaque"))) {
+        // CORS opaque pattern from Apps Script — request DID reach the server
+        saved = true;
+      } else {
+        console.warn("Attempt " + attempts + " error:", err.message);
+      }
+      if (!saved && attempts < MAX_ATTEMPTS) await new Promise(r => setTimeout(r, 1000 * attempts));
     }
-  } catch(err) {
-    // Network error — do NOT retry (would create duplicate)
-    console.warn("Save network error:", err.message);
-    // If it's a CORS/opaque error, the request likely DID reach the server
-    if (err.message && (err.message.includes("Failed to fetch") || err.message.includes("NetworkError"))) {
-      _saved = true; // CORS opaque success pattern — data reached Apps Script
-    }
-  }
-
-  if (_saved) {
-    showSuccessScreen(data);
-    toast("Entry submitted successfully!", "success");
-    setTimeout(loadTodayPanel, 1500);
-  } else {
-    // Only show error if we're genuinely unsure
-    showSuccessScreen(data);
-    toast("⚠ Entry submitted — please verify it appears in the dashboard", "error");
-    setTimeout(loadTodayPanel, 2000);
   }
 
   submitBtn.disabled = false;
   submitBtn.innerHTML = "Submit Entry";
+
+  if (saved) {
+    showSuccessScreen(data);
+    toast("✅ Entry saved successfully!", "success");
+    setTimeout(loadTodayPanel, 1500);
+  } else {
+    // All attempts failed — show error and keep form data
+    toast("❌ Could not save — please check your connection and try again", "error");
+    submitBtn.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
 });
 
 function showSuccessScreen(data) {
@@ -3169,6 +3380,8 @@ function switchPage(pageId) {
   document.getElementById(pageId).classList.add("active");
   document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
   document.querySelector(`.tab[data-page="${pageId}"]`).classList.add("active");
+  if (pageId === "pageAdmin") { setTimeout(admInit, 50); }
+  // (admin page already verified by showAdminPin gate)
   // Widen main for dashboard
   if (pageId === "pageDashboard") mainEl.classList.add("dash-wide");
   else mainEl.classList.remove("dash-wide");
@@ -4271,6 +4484,215 @@ function json(obj) {
     </div>`;
   document.body.appendChild(overlay);
 }
+
+
+
+
+// ══════════════════════════════════════════════════════════════
+// ADMIN PANEL
+// ══════════════════════════════════════════════════════════════
+const ADM_INITIAL = {
+  counsellors:  ["Ranjita Behura", "Sugyani Naik", "Abhishek Das", "Sonalika Pal", "Dharmananda Sahu", "Lipsa Priyadarshini Swain", "Shreya", "Rohini Ladage", "Bhumika Bansode", "Zayed Quadri", "Deepak Gupta", "Samiksha Aswar", "Trupti Mankar", "Srushti", "Lokesh Gugale", "Shreyash Bankar", "Vaibhavi Raval", "Samarth Kokate", "Rutuja Chunarkar", "Reshma vhatkar", "Meenakshi Manwadi", "Priya jaiswal", "Nikita patidar", "Sameer Abbas", "Prasad thorat", "Aditi Bhosale", "Pratiksha Jagtap", "Faisal Shaikh", "Dhanashri Adhav", "Moin pathan", "Khushi Oswal", "Tejaswini bhalke", "Aditya hiwale", "Aditi dhariwal", "Pooja Navale", "Nirupama Singh", "Yuvraj Pandhare", "Srinidhi Galande", "Ashwini Kadve", "Farheen Afshan", "Dipika Mahajan", "Bilal Ayaz Shaikh", "Nutan Malwade", "Kishore Metkari", "Manoj Sahu", "Priyanka Kasare", "Pranita Chaudhary", "Atharva gaikwad", "Anjana Mohanty", "Priyanka Khude", "Atharva Jadhav", "Sharayu Nimbalkar", "Sneha Shilvanth", "Priya Jadhav", "Laxmi Biradar", "Shruti Girigosavi", "Nausheen Afshan", "Sanskruti Kurale", "Sohail Sayyed", "Vaishnavi Mane", "Viraj Nikam", "Manisha Shinde", "Pranav Gopale", "Ritusmita Choudhury", "Subhashree Dash", "Nihal Pal", "Iqra shaikh", "sayyad mafis mahemud", "Pavan Waghmare", "Pooja Kore", "Sapna Chavhan", "Sonali Sul", "Simra limboowale", "Tanvi Dhokne", "Sohail Shaikh", "Sangita Das", "Meenal solanki", "Nikita Jannu", "Sachin Paliwal", "Manisha Kumari", "Sazreen Ansari", "Nupoor Vartak", "Omkar Ghadge", "Samiya Ansari", "Aafiya Shaikh", "Shayan Raza", "Aarya Pore", "Diksha Surwade", "Mahek Imran Shaikh", "Badal Kumar Mahapatra", "Aniket Nevhal", "Akshay Saraf"],
+  universities: ["Alliance", "Amity", "Chandigarh", "CV Raman", "GIFT", "DRIEMS", "GEC", "Pearl", "KU/UID", "UAI", "Presidency", "UPES"],
+  team_leaders: ["Antaryami Barik", "Yashwant Kanaki", "Kajal Sonone", "Ruthvik Wakode", "Devashish B", "Bhakti Sawargaonkar", "Priyanka Bhoi", "Akshay Palsande", "Vaishnavi Bhoyar", "Manas N"],
+  campuses:     ["Bengaluru", "Mumbai", "Gwalior", "Raipur", "Jaipur", "Gurugram", "Lucknow", "City Campus", "Central Campus", "Noida", "Dehradun", "Delhi NCR", "Ahmedabad", "Gandhinagar", "Paralakhemundi", "Balasore", "Vijayanagram", "Bhubaneswar", "Mohali", "Unnao", "Delhi West", "Delhi South", "Hyderabad"],
+  managers:     ["Deepesh Singh", "Aasif Shaikh", "Shipra Tripathi", "Abhishek Kapoor", "Manas Nayak", "Aslam Khan"],
+  statuses:     ["Application Done", "Half Form", "Test Pending", "PI Pending", "App Cancelled", "App Hold", "Admission Done", "Adm Cancelled", "OL Released", "OL On Hold", "OL Pending", "Rejected by Student"],
+  sources:      ["Alliance_G", "Alliance_M", "Amity G", "Amity_D", "Amity_Dp", "Amity_M", "Bangalore Ab", "Bangalore R", "Bangalore_PS", "BGU_G", "Cutm G", "CvRaman_G", "Delhi A", "Delhi_M", "Design", "Driems_G", "DU25", "DU26", "Gift G", "Jaipur_A", "Jaipur_Ax", "Lead_IM", "Lead_Ntn", "Lead_V", "Leads_A", "Leads_DU", "Lead_P26", "MBA_L", "Mumbai N", "Odisha K", "Odisha SG", "Odisha_B", "Odisha_FB", "Odisha_I", "Odisha_J", "Odisha_JG", "Odisha_S", "Old Leads", "Reference", "SOA_G", "V_Design", "Others", "Presidency_G", "Lead_MT", "RICS"]
+};
+
+const ADM_KEYS = ['counsellors','universities','team_leaders','campuses','managers','statuses','sources'];
+let admData = {};
+
+// Selector map — maps admin key → which form selects to update
+const ADM_SELECTORS = {
+  counsellors:  ['select[name="Counsellor Name"]'],
+  universities: ['select[name="University Name"]'],
+  team_leaders: ['select[name="Team Leader"]'],
+  campuses:     ['select[name="Campus"]'],
+  managers:     ['select[name="Manager"]'],
+  statuses:     ['select[name="Application Status"]'],
+  sources:      ['select[name="Source"]']
+};
+
+// Load from localStorage or defaults
+ADM_KEYS.forEach(k => {
+  const saved = localStorage.getItem('portal_adm_' + k);
+  admData[k] = saved ? JSON.parse(saved) : [...ADM_INITIAL[k]];
+});
+
+function admSave(key) {
+  localStorage.setItem('portal_adm_' + key, JSON.stringify(admData[key]));
+}
+
+function admRender(key, filter) {
+  filter = (filter || '').toLowerCase();
+  const wrap  = document.getElementById('adm-tags-' + key);
+  const count = document.getElementById('adm-count-' + key);
+  if (!wrap) return;
+  count.textContent = admData[key].length + ' total';
+  const items = filter ? admData[key].filter(v => v.toLowerCase().includes(filter)) : admData[key];
+  if (!items.length) {
+    wrap.innerHTML = '<div class="admin-empty">' + (filter ? 'No matches' : 'No items yet') + '</div>';
+    return;
+  }
+  wrap.innerHTML = items.map(v => `<div class="admin-tag">${admEsc(v)}<button class="admin-tag-del" onclick="admRemove('${key}','${admEsc(v).replace(/'/g,"\\'")}')">×</button></div>`).join('');
+}
+
+function admEsc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function admAdd(key) {
+  const inp = document.getElementById('adm-inp-' + key);
+  const val = inp.value.trim();
+  if (!val) { toast('Enter a value first', 'error'); return; }
+  if (admData[key].map(v=>v.toLowerCase()).includes(val.toLowerCase())) { toast('"' + val + '" already exists', 'error'); return; }
+  admData[key].push(val);
+  admSave(key);
+  inp.value = '';
+  admRender(key);
+  admUpdateFormSelect(key);
+  toast('✓ Added: ' + val, 'success');
+}
+
+function admRemove(key, val) {
+  if (!confirm('Remove "' + val + '"?')) return;
+  admData[key] = admData[key].filter(v => v !== val);
+  admSave(key);
+  admRender(key);
+  admUpdateFormSelect(key);
+  toast('Removed: ' + val);
+}
+
+function admFilter(key, q) {
+  admRender(key, q);
+}
+
+function admUpdateFormSelect(key) {
+  const selectors = ADM_SELECTORS[key] || [];
+  selectors.forEach(sel => {
+    document.querySelectorAll(sel).forEach(select => {
+      const curVal = select.value;
+      const firstOpt = select.options[0];
+      select.innerHTML = '';
+      if (firstOpt) select.appendChild(firstOpt);
+      admData[key].forEach(v => {
+        const o = document.createElement('option');
+        o.value = v; o.textContent = v;
+        select.appendChild(o);
+      });
+      select.value = curVal;
+    });
+  });
+}
+
+function admSaveAll() {
+  const btn = document.getElementById('admSaveBtn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  ADM_KEYS.forEach(k => {
+    admSave(k);
+    admUpdateFormSelect(k);
+  });
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.textContent = '💾 Save Changes';
+    toast('✓ All changes saved!', 'success');
+  }, 400);
+}
+
+// Init admin panel on page load
+function admInit() {
+  ADM_KEYS.forEach(k => {
+    admRender(k);
+    admUpdateFormSelect(k);
+  });
+}
+
+// Auto-init so form selects are updated on load
+admInit();
+
+
+// ══════════════════════════════════════════════════════════════
+// ADMIN PASSWORD PROTECTION
+// ══════════════════════════════════════════════════════════════
+const ADMIN_PASSWORD = "Hs@2026#Ad@435"; // ← Change this password
+const ADMIN_SESSION_KEY = "portal_admin_auth";
+const ADMIN_SESSION_MINS = 30; // Auto-lock after 30 minutes
+
+function adminLogin() {
+  // Check if already authenticated in session
+  const saved = sessionStorage.getItem(ADMIN_SESSION_KEY);
+  if (saved) {
+    const { expiry } = JSON.parse(saved);
+    if (Date.now() < expiry) {
+      switchPage("pageAdmin");
+      return;
+    }
+    sessionStorage.removeItem(ADMIN_SESSION_KEY);
+  }
+  // Show modal
+  const modal = document.getElementById("adminAuthModal");
+  modal.style.display = "flex";
+  document.getElementById("adminPwdInput").value = "";
+  document.getElementById("adminPwdError").style.display = "none";
+  setTimeout(() => document.getElementById("adminPwdInput").focus(), 100);
+}
+
+function adminLoginSubmit() {
+  const pwd = document.getElementById("adminPwdInput").value;
+  if (pwd === ADMIN_PASSWORD) {
+    // Save session with expiry
+    sessionStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify({
+      expiry: Date.now() + ADMIN_SESSION_MINS * 60 * 1000
+    }));
+    closeAdminModal();
+    switchPage("pageAdmin");
+  } else {
+    const err = document.getElementById("adminPwdError");
+    err.style.display = "block";
+    const inp = document.getElementById("adminPwdInput");
+    inp.style.borderColor = "#c53030";
+    inp.value = "";
+    inp.focus();
+    // Shake animation
+    inp.style.animation = "shake 0.4s ease";
+    setTimeout(() => { inp.style.animation = ""; inp.style.borderColor = "var(--border)"; }, 400);
+  }
+}
+
+function closeAdminModal() {
+  document.getElementById("adminAuthModal").style.display = "none";
+  // Deselect admin tab if not authenticated
+  const saved = sessionStorage.getItem(ADMIN_SESSION_KEY);
+  if (!saved || Date.now() >= JSON.parse(saved).expiry) {
+    document.querySelector('.tab[data-page="pageAdmin"]').classList.remove("active");
+  }
+}
+
+function toggleAdminPwd() {
+  const inp = document.getElementById("adminPwdInput");
+  const btn = document.getElementById("adminPwdToggle");
+  if (inp.type === "password") { inp.type = "text"; btn.textContent = "🙈"; }
+  else { inp.type = "password"; btn.textContent = "👁"; }
+}
+
+// Close on backdrop click
+document.getElementById("adminAuthModal").addEventListener("click", function(e) {
+  if (e.target === this) closeAdminModal();
+});
+
+// Add shake CSS
+const shakeStyle = document.createElement("style");
+shakeStyle.textContent = `@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20%      { transform: translateX(-8px); }
+  40%      { transform: translateX(8px); }
+  60%      { transform: translateX(-5px); }
+  80%      { transform: translateX(5px); }
+}`;
+document.head.appendChild(shakeStyle);
 
 
 
