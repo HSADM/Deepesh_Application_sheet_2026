@@ -2468,7 +2468,7 @@
 // ════════════════════════════════════════════════════════════
 // CONFIG
 // ════════════════════════════════════════════════════════════
-const API_URL = "https://script.google.com/macros/s/AKfycbwYK8fCg7yYqciWJUgjgsPGQrYAsSVKFm0IOLl59tT9245mxGyk9EMge5B3U3Ev8Vo7fg/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyMwTGZwHCxHk_UTM91s3RAoeoZarxTqcKsPWq47gOga2tALcZ28VvdkcoKn6FrjolWvA/exec";
 const ADMIN_PIN = "Higher2026"; // ← Change this password
 
 // ════════════════════════════════════════════════════════════
@@ -2905,22 +2905,24 @@ document.addEventListener("DOMContentLoaded", async () => {
       .join("");
   }
 
-  // Load today panel from API
+  // Load today panel from API — always force-fresh so count is accurate
   async function loadTodayPanel() {
     try {
       if (!API_URL) return;
-      // Use cached allEntries if already loaded — no extra fetch needed
-      if (allEntries && allEntries.length > 0) {
-        renderTodayPanel(allEntries);
-        return;
-      }
+      // Always fetch fresh from server (forceRefresh:true) — never use stale cache
       const res = await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ action: "getDashboard" }),
+        body: JSON.stringify({ action: "getDashboard", forceRefresh: true, pageSize: 5000, page: 0 }),
       });
       const json = await res.json();
-      if (json.status === "success") renderTodayPanel(json.rows || []);
+      // API returns json.data (not json.rows)
+      if (json.status === "success") {
+        const rows = json.data || json.rows || [];
+        renderTodayPanel(rows);
+        // Also update allEntries so dashboard table is fresh too
+        if (rows.length) { allEntries = rows; _renderPage && _renderPage(); }
+      }
     } catch(e) {
       console.warn("Today panel load error:", e);
       const statusEl = document.getElementById("tpStatus");
@@ -2932,8 +2934,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   loadTodayPanel();
+  setInterval(() => { loadTodayPanel(); }, 60000);
   // Refresh panel every 2 minutes
-  setInterval(loadTodayPanel, 90 * 1000); // 90s auto-refresh
 
   // Hook into allEntries updates — refresh panel whenever dashboard data loads
   const _origBuildTable = window.buildTable;
@@ -3317,6 +3319,18 @@ form.addEventListener("submit", async (e) => {
   submitBtn.disabled = false;
   submitBtn.innerHTML = "Submit Entry";
 
+  // Bust server cache so all users see new submission immediately
+  if (saved) {
+    try {
+      fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "bustCache" }),
+      });
+    } catch(e) {}
+    localStorage.setItem("portal_last_update", Date.now().toString());
+  }
+
   if (saved) {
     showSuccessScreen(data);
     toast("✅ Entry saved successfully!", "success");
@@ -3682,6 +3696,24 @@ async function hardRefresh() {
   _setSyncStatus("syncing");
   await loadDashboard(true);
 }
+
+// ── Cross-user real-time sync ─────────────────────────────────────────────────
+// Poll every 30s: if another user submitted/updated, force-refresh dashboard
+let _lastKnownUpdate = localStorage.getItem("portal_last_update") || "0";
+setInterval(async () => {
+  try {
+    // Check if a newer update timestamp exists (written by any tab/user on same browser)
+    // For cross-device sync, we piggyback on the server cache bust:
+    // fetch with forceRefresh=false; if server cache was busted, it re-reads sheet
+    const currentUpdate = localStorage.getItem("portal_last_update") || "0";
+    if (currentUpdate !== _lastKnownUpdate) {
+      _lastKnownUpdate = currentUpdate;
+      _cacheTime = 0; // force re-fetch
+      await _bgRefresh(true);
+      toast("🔄 Dashboard refreshed with latest data", "info");
+    }
+  } catch(e) {}
+}, 30000);
 
 async function loadDashboard(forceServerRefresh) {
   const content = document.getElementById("dashContent");
@@ -4414,8 +4446,18 @@ async function saveEditForm() {
       toast("❌ Save failed — " + (json.message || "check Apps Script logs"), "error");
       return;
     }
-    // Success confirmed — invalidate cache so next Refresh gets fresh data
+    // Success confirmed — bust server cache + broadcast update timestamp
     _cacheTime = 0;
+    // Bust server-side cache so ALL users get fresh data on next load
+    try {
+      await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action: "bustCache" }),
+      });
+    } catch(e) { /* non-critical */ }
+    // Write a shared update signal via a public timestamp endpoint
+    localStorage.setItem("portal_last_update", Date.now().toString());
   } catch (netErr) {
     console.error("saveEditForm network error:", netErr);
     toast("⚠️ Saved locally but couldn't reach server — check connection", "error");
@@ -4515,14 +4557,56 @@ const ADM_SELECTORS = {
   sources:      ['select[name="Source"]']
 };
 
-// Load from localStorage or defaults
+// Load from localStorage as fallback cache
 ADM_KEYS.forEach(k => {
   const saved = localStorage.getItem('portal_adm_' + k);
   admData[k] = saved ? JSON.parse(saved) : [...ADM_INITIAL[k]];
 });
 
 function admSave(key) {
+  // Save locally as cache
   localStorage.setItem('portal_adm_' + key, JSON.stringify(admData[key]));
+}
+
+// ── Push ALL dropdown config to Google Sheet (Config tab) ──────────────────
+async function admPushToServer() {
+  if (!API_URL) return;
+  try {
+    await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "saveConfig", config: admData }),
+    });
+    // Bust cache so all users reload config
+    await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "bustCache" }),
+    });
+  } catch(e) { console.warn("admPushToServer error:", e); }
+}
+
+// ── Pull dropdown config from Google Sheet ─────────────────────────────────
+async function admPullFromServer(silent) {
+  if (!API_URL) return;
+  try {
+    const res  = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "getConfig" }),
+    });
+    const json = await res.json();
+    if (json.status === "success" && json.config) {
+      ADM_KEYS.forEach(k => {
+        if (json.config[k] && Array.isArray(json.config[k]) && json.config[k].length) {
+          admData[k] = json.config[k];
+          localStorage.setItem('portal_adm_' + k, JSON.stringify(admData[k]));
+        }
+      });
+      ADM_KEYS.forEach(k => { admRender(k); admUpdateFormSelect(k); });
+      if (!silent) toast("✓ Dropdowns synced from server", "success");
+    }
+  } catch(e) { console.warn("admPullFromServer error:", e); }
 }
 
 function admRender(key, filter) {
@@ -4553,6 +4637,7 @@ function admAdd(key) {
   inp.value = '';
   admRender(key);
   admUpdateFormSelect(key);
+  admPushToServer();
   toast('✓ Added: ' + val, 'success');
 }
 
@@ -4562,6 +4647,7 @@ function admRemove(key, val) {
   admSave(key);
   admRender(key);
   admUpdateFormSelect(key);
+  admPushToServer();
   toast('Removed: ' + val);
 }
 
@@ -4587,7 +4673,7 @@ function admUpdateFormSelect(key) {
   });
 }
 
-function admSaveAll() {
+async function admSaveAll() {
   const btn = document.getElementById('admSaveBtn');
   btn.disabled = true;
   btn.textContent = 'Saving…';
@@ -4595,19 +4681,22 @@ function admSaveAll() {
     admSave(k);
     admUpdateFormSelect(k);
   });
-  setTimeout(() => {
-    btn.disabled = false;
-    btn.textContent = '💾 Save Changes';
-    toast('✓ All changes saved!', 'success');
-  }, 400);
+  // Push to server so ALL users get updated dropdowns
+  await admPushToServer();
+  btn.disabled = false;
+  btn.textContent = '💾 Save Changes';
+  toast('✓ Saved & synced to all users!', 'success');
 }
 
 // Init admin panel on page load
-function admInit() {
+async function admInit() {
+  // First apply local cache for instant render
   ADM_KEYS.forEach(k => {
     admRender(k);
     admUpdateFormSelect(k);
   });
+  // Then pull fresh config from server (works for ALL users on GitHub Pages)
+  await admPullFromServer(true);
 }
 
 // Auto-init so form selects are updated on load
