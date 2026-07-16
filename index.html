@@ -2409,6 +2409,41 @@
   </div>
 
 
+  <!-- ══════════════════ DASHBOARD PASSWORD MODAL ══════════════════ -->
+  <div id="dashboardAuthModal" style="display:none;position:fixed;inset:0;background:rgba(15,25,50,0.65);backdrop-filter:blur(6px);z-index:99999;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:#fff;border-radius:18px;width:100%;max-width:380px;box-shadow:0 30px 80px rgba(0,0,0,0.25);overflow:hidden;animation:modalSlideIn 0.25s cubic-bezier(0.16,1,0.3,1) both;">
+      <div style="background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);padding:24px;text-align:center;">
+        <div style="font-size:36px;margin-bottom:8px;">📊</div>
+        <div style="font-size:17px;font-weight:700;color:#fff;">Dashboard Access</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px;">Enter password to continue</div>
+      </div>
+      <div style="padding:24px;">
+        <div style="position:relative;margin-bottom:14px;">
+          <input type="password" id="dashboardPwdInput" placeholder="Enter dashboard password"
+            style="width:100%;padding:11px 42px 11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;outline:none;transition:border-color 0.15s;box-sizing:border-box;"
+            onkeydown="if(event.key==='Enter') dashboardLoginSubmit()"
+            onfocus="this.style.borderColor='var(--primary)'"
+            onblur="this.style.borderColor='var(--border)'">
+          <button onclick="toggleDashboardPwd()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;color:#94a3b8;" id="dashboardPwdToggle">👁</button>
+        </div>
+        <div id="dashboardPwdError" style="display:none;color:#c53030;font-size:12px;margin-bottom:10px;padding:8px 12px;background:#fff5f5;border-radius:8px;border:1px solid #feb2b2;">
+          ❌ Incorrect password. Please try again.
+        </div>
+        <button onclick="dashboardLoginSubmit()"
+          style="width:100%;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 14px rgba(26,54,93,0.3);transition:transform 0.15s;"
+          onmouseover="this.style.transform='translateY(-1px)'"
+          onmouseout="this.style.transform=''">
+          Unlock Dashboard
+        </button>
+        <button onclick="closeDashboardModal()"
+          style="width:100%;background:none;color:var(--text-muted);border:none;padding:10px;font-size:13px;cursor:pointer;margin-top:6px;font-family:inherit;">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+
   <!-- ══════════════════ ADMIN PASSWORD MODAL ══════════════════ -->
   <div id="adminAuthModal" style="display:none;position:fixed;inset:0;background:rgba(15,25,50,0.65);backdrop-filter:blur(6px);z-index:99999;align-items:center;justify-content:center;padding:20px;">
     <div style="background:#fff;border-radius:18px;width:100%;max-width:380px;box-shadow:0 30px 80px rgba(0,0,0,0.25);overflow:hidden;animation:modalSlideIn 0.25s cubic-bezier(0.16,1,0.3,1) both;">
@@ -2451,7 +2486,7 @@
     <span class="tab-icon">📝</span>
     <span>Apply</span>
   </button>
-  <button class="tab" data-page="pageDashboard" onclick="requestDashboard()">
+  <button class="tab" data-page="pageDashboard" onclick="dashboardLogin()">
     <span class="tab-icon">📊</span>
     <span>Dashboard</span>
   </button>
@@ -2468,7 +2503,7 @@
 // ════════════════════════════════════════════════════════════
 // CONFIG
 // ════════════════════════════════════════════════════════════
-const API_URL = "https://script.google.com/macros/s/AKfycbyMwTGZwHCxHk_UTM91s3RAoeoZarxTqcKsPWq47gOga2tALcZ28VvdkcoKn6FrjolWvA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzkHLr6YIEIv1xLc5qcBGnzOl3Em1YMeumPNB20BZ2BvMRN7v0w67Ci07F8ZSu3m-G2Vw/exec";
 const ADMIN_PIN = "Higher2026"; // ← Change this password
 
 // ════════════════════════════════════════════════════════════
@@ -3403,9 +3438,72 @@ function switchPage(pageId) {
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-// DASHBOARD ACCESS (PIN sent silently in background)
+// DASHBOARD ACCESS (password protected, session-based — like Admin)
 // ══════════════════════════════════════════════════════════════════════════
-const DASHBOARD_PIN = "1234"; // matches Apps Script DASHBOARD_PASSWORD
+const DASHBOARD_PASSWORD = "Hs@2026#Dash";  // ← Change this password
+const DASHBOARD_SESSION_KEY = "portal_dashboard_auth";
+const DASHBOARD_SESSION_MINS = 30; // Auto-lock after 30 minutes
+
+function dashboardLogin() {
+  // Check if already authenticated in session
+  const saved = sessionStorage.getItem(DASHBOARD_SESSION_KEY);
+  if (saved) {
+    const { expiry } = JSON.parse(saved);
+    if (Date.now() < expiry) {
+      requestDashboard();
+      return;
+    }
+    sessionStorage.removeItem(DASHBOARD_SESSION_KEY);
+  }
+  // Show modal
+  const modal = document.getElementById("dashboardAuthModal");
+  modal.style.display = "flex";
+  document.getElementById("dashboardPwdInput").value = "";
+  document.getElementById("dashboardPwdError").style.display = "none";
+  setTimeout(() => document.getElementById("dashboardPwdInput").focus(), 100);
+}
+
+function dashboardLoginSubmit() {
+  const pwd = document.getElementById("dashboardPwdInput").value;
+  if (pwd === DASHBOARD_PASSWORD) {
+    sessionStorage.setItem(DASHBOARD_SESSION_KEY, JSON.stringify({
+      expiry: Date.now() + DASHBOARD_SESSION_MINS * 60 * 1000
+    }));
+    closeDashboardModal();
+    requestDashboard();
+  } else {
+    const err = document.getElementById("dashboardPwdError");
+    err.style.display = "block";
+    const inp = document.getElementById("dashboardPwdInput");
+    inp.style.borderColor = "#c53030";
+    inp.value = "";
+    inp.focus();
+    inp.style.animation = "shake 0.4s ease";
+    setTimeout(() => { inp.style.animation = ""; inp.style.borderColor = "var(--border)"; }, 400);
+  }
+}
+
+function closeDashboardModal() {
+  document.getElementById("dashboardAuthModal").style.display = "none";
+  // Deselect dashboard tab if not authenticated
+  const saved = sessionStorage.getItem(DASHBOARD_SESSION_KEY);
+  if (!saved || Date.now() >= JSON.parse(saved).expiry) {
+    document.querySelector('.tab[data-page="pageDashboard"]').classList.remove("active");
+  }
+}
+
+function toggleDashboardPwd() {
+  const inp = document.getElementById("dashboardPwdInput");
+  const btn = document.getElementById("dashboardPwdToggle");
+  if (inp.type === "password") { inp.type = "text"; btn.textContent = "🙈"; }
+  else { inp.type = "password"; btn.textContent = "👁"; }
+}
+
+// Close on backdrop click
+document.addEventListener("DOMContentLoaded", function() {
+  const dm = document.getElementById("dashboardAuthModal");
+  if (dm) dm.addEventListener("click", function(e) { if (e.target === this) closeDashboardModal(); });
+});
 
 function requestDashboard() {
   switchPage("pageDashboard");
